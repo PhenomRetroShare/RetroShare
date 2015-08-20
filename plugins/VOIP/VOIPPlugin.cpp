@@ -86,6 +86,7 @@ VOIPPlugin::VOIPPlugin()
 	mPeers = NULL;
 	config_page = NULL ;
 	mIcon = NULL ;
+	mVOIPFeedNotify = NULL;
 	mVOIPToasterNotify = NULL ;
 
 	mVOIPGUIHandler = new VOIPGUIHandler ;
@@ -105,6 +106,7 @@ VOIPPlugin::VOIPPlugin()
 
 void VOIPPlugin::setInterfaces(RsPlugInInterfaces &interfaces)
 {
+	//setPlugInHandler is called before setInterfaces
     mPeers = interfaces.mPeers;
 }
 
@@ -156,14 +158,16 @@ ChatWidgetHolder *VOIPPlugin::qt_get_chat_widget_holder(ChatWidget *chatWidget) 
 
 p3Service *VOIPPlugin::p3_service() const
 {
+	//setPlugInHandler is called before setInterfaces and p3_service()
     if(mVOIP == NULL)
-        rsVOIP = mVOIP = new p3VOIP(mPlugInHandler,mVOIPNotify) ; // , 3600 * 24 * 30 * 6); // 6 Months
+        rsVOIP = mVOIP = new p3VOIP(mPlugInHandler,mVOIPNotify) ;
 
 	return mVOIP ;
 }
 
 void VOIPPlugin::setPlugInHandler(RsPluginHandler *pgHandler)
 {
+	//setPlugInHandler is called before setInterfaces
     mPlugInHandler = pgHandler;
 }
 
@@ -234,6 +238,14 @@ void VOIPPlugin::qt_sound_events(SoundEvents &events) const
 	                , QApplication::translate("VOIP", "Outgoing video call")
 	                , VOIP_SOUND_OUTGOING_VIDEO_CALL
 	                , QFileInfo(baseDir, "outgoingcall.wav").absoluteFilePath());
+}
+
+FeedNotify *VOIPPlugin::qt_feedNotify()
+{
+	if (!mVOIPFeedNotify) {
+		mVOIPFeedNotify = new VOIPFeedNotify(mVOIP, mVOIPNotify);
+	}
+	return mVOIPFeedNotify;
 }
 
 ToasterNotify *VOIPPlugin::qt_toasterNotify(){

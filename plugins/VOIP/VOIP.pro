@@ -94,6 +94,8 @@ SOURCES = VOIPPlugin.cpp               \
           gui/VideoProcessor.cpp       \
           gui/QVideoDevice.cpp         \
           gui/VOIPChatWidgetHolder.cpp \
+          gui/VOIPFeedItem.cpp         \
+          gui/VOIPFeedNotify.cpp       \
           gui/VOIPGUIHandler.cpp       \
           gui/VOIPNotify.cpp           \
           gui/VOIPToasterItem.cpp      \
@@ -110,6 +112,8 @@ HEADERS = VOIPPlugin.h                 \
           gui/VideoProcessor.h         \
           gui/QVideoDevice.h           \
           gui/VOIPChatWidgetHolder.h   \
+          gui/VOIPFeedItem.h           \
+          gui/VOIPFeedNotify.h         \
           gui/VOIPGUIHandler.h         \
           gui/VOIPNotify.h             \
           gui/VOIPToasterItem.h        \
@@ -119,6 +123,7 @@ HEADERS = VOIPPlugin.h                 \
 FORMS   = gui/AudioInputConfig.ui      \
           gui/AudioStats.ui            \
           gui/AudioWizard.ui           \
+          gui/VOIPFeedItem.ui          \
           gui/VOIPToasterItem.ui
 
 TARGET = VOIP

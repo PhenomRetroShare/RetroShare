@@ -375,7 +375,7 @@ void NewsFeed::updateDisplay()
 			RsPlugin *rsPlugin = rsPlugins->plugin(i);
 			if (rsPlugin) {
 				FeedNotify *feedNotify = rsPlugin->qt_feedNotify();
-				if (feedNotify && feedNotify->notifyEnabled()) {
+				if (feedNotify) {
 					FeedItem *item = feedNotify->feedItem(this);
 					if (item) {
 						addFeedItem(item);
@@ -868,6 +868,24 @@ void NewsFeed::testFeed(FeedNotify *feedNotify)
 	}
 
 	FeedItem *feedItem = feedNotify->testFeedItem(instance);
+	if (!feedItem) {
+		return;
+	}
+
+	instance->addFeedItem(feedItem);
+}
+
+void NewsFeed::testFeed(QString tag, FeedNotify *feedNotify)
+{
+	if (!instance) {
+		return;
+	}
+
+	if (!feedNotify) {
+		return;
+	}
+
+	FeedItem *feedItem = feedNotify->testFeedItem(tag, instance);
 	if (!feedItem) {
 		return;
 	}

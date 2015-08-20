@@ -62,6 +62,7 @@ public:
 
 	static void testFeeds(uint notifyFlags);
 	static void testFeed(FeedNotify *feedNotify);
+	static void testFeed(QString tag, FeedNotify *feedNotify);
 
 	virtual void updateDisplay();
 

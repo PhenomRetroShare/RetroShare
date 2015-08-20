@@ -68,6 +68,28 @@ NotifyPage::NotifyPage(QWidget * parent, Qt::WindowFlags flags)
 
                   mFeedNotifySettingList.push_back(FeedNotifySetting(feedNotify, enabledCheckBox));
               }
+              QMap<QString, QString> map;
+              if (feedNotify->hasSettings(name, map)) {
+                  if (!map.empty()){
+                      QWidget* widget = new QWidget();
+                      QVBoxLayout* vbLayout = new QVBoxLayout(widget);
+                      QLabel *label = new QLabel(name, this);
+                      QFont fontBold = QFont(font);
+                      fontBold.setBold(true);
+                      label->setFont(fontBold);
+                      vbLayout->addWidget(label);
+                      for (QMap<QString, QString>::const_iterator it = map.begin(); it != map.end(); ++it){
+                          QCheckBox *enabledCheckBox = new QCheckBox(it.value(), this);
+                          enabledCheckBox->setAccessibleName(it.key());
+                          enabledCheckBox->setFont(font);
+                          vbLayout->addWidget(enabledCheckBox);
+                          mFeedNotifySettingList.push_back(FeedNotifySetting(feedNotify, enabledCheckBox));
+                      }
+                      ui.feedLayout->addWidget(widget, rowFeed++);
+
+                  }
+
+              }
           }
 
           ToasterNotify *toasterNotify = rsPlugin->qt_toasterNotify();
@@ -217,7 +239,11 @@ NotifyPage::save(QString &/*errmsg*/)
     /* save feed notify */
     QList<FeedNotifySetting>::iterator feedNotifyIt;
     for (feedNotifyIt = mFeedNotifySettingList.begin(); feedNotifyIt != mFeedNotifySettingList.end(); ++feedNotifyIt) {
+        if(feedNotifyIt->mEnabledCheckBox->accessibleName().isEmpty()){
         feedNotifyIt->mFeedNotify->setNotifyEnabled(feedNotifyIt->mEnabledCheckBox->isChecked());
+        } else {
+            feedNotifyIt->mFeedNotify->setNotifyEnabled(feedNotifyIt->mEnabledCheckBox->accessibleName(), feedNotifyIt->mEnabledCheckBox->isChecked()) ;
+        }
     }
 
     /* save toaster notify */
@@ -324,7 +350,11 @@ void NotifyPage::load()
     /* load feed notify */
     QList<FeedNotifySetting>::iterator feedNotifyIt;
     for (feedNotifyIt = mFeedNotifySettingList.begin(); feedNotifyIt != mFeedNotifySettingList.end(); ++feedNotifyIt) {
+        if (feedNotifyIt->mEnabledCheckBox->accessibleName().isEmpty()) {
         feedNotifyIt->mEnabledCheckBox->setChecked(feedNotifyIt->mFeedNotify->notifyEnabled());
+        } else {
+            feedNotifyIt->mEnabledCheckBox->setChecked(feedNotifyIt->mFeedNotify->notifyEnabled(feedNotifyIt->mEnabledCheckBox->accessibleName())) ;
+        }
     }
 
     /* load toaster notify */
@@ -380,8 +410,14 @@ void NotifyPage::testFeed()
     /* notify of plugins */
     QList<FeedNotifySetting>::iterator feedNotifyIt;
     for (feedNotifyIt = mFeedNotifySettingList.begin(); feedNotifyIt != mFeedNotifySettingList.end(); ++feedNotifyIt) {
+        if (feedNotifyIt->mEnabledCheckBox->accessibleName().isEmpty()){
         if (feedNotifyIt->mEnabledCheckBox->isChecked()) {
             NewsFeed::testFeed(feedNotifyIt->mFeedNotify);
+            }
+        } else {
+            if (feedNotifyIt->mEnabledCheckBox->isChecked()){
+                NewsFeed::testFeed(feedNotifyIt->mEnabledCheckBox->accessibleName(), feedNotifyIt->mFeedNotify) ;
+            }
         }
     }
 }

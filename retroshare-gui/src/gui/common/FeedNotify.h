@@ -22,6 +22,7 @@
 #ifndef FEEDNOTIFY_H
 #define FEEDNOTIFY_H
 
+#include <QMap>
 #include <QObject>
 
 class FeedHolder;
@@ -40,6 +41,12 @@ public:
 	virtual void setNotifyEnabled(bool /*enabled*/);
 	virtual FeedItem *feedItem(FeedHolder */*parent*/);
 	virtual FeedItem *testFeedItem(FeedHolder */*parent*/);
+
+	//For Plugin with differents Feeds
+	virtual bool hasSettings(QString &/*mainName*/, QMap<QString,QString> &/*tagAndTexts*/);
+	virtual bool notifyEnabled(QString /*tag*/);
+	virtual void setNotifyEnabled(QString /*tag*/, bool /*enabled*/);
+	virtual FeedItem *testFeedItem(QString /*tag*/, FeedHolder */*parent*/);
 };
 
 #endif // FEEDNOTIFY_H

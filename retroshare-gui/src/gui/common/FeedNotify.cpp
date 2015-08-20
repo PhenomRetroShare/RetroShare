@@ -53,3 +53,22 @@ FeedItem *FeedNotify::testFeedItem(FeedHolder */*parent*/)
 {
 	return NULL;
 }
+
+bool FeedNotify::hasSettings(QString &/*name*/, QMap<QString,QString> &/*tagAndTexts*/)
+{
+	return false;
+}
+
+bool FeedNotify::notifyEnabled(QString /*tag*/)
+{
+	return false;
+}
+
+void FeedNotify::setNotifyEnabled(QString /*tag*/, bool /*enabled*/)
+{
+}
+
+FeedItem *FeedNotify::testFeedItem(QString /*tag*/, FeedHolder */*parent*/)
+{
+	return NULL;
+}

@@ -21,6 +21,7 @@
 #pragma once
 
 /*VOIP*/
+#include "gui/VOIPFeedNotify.h"
 #include "gui/VOIPToasterNotify.h"
 #include "services/p3VOIP.h"
 
@@ -59,6 +60,7 @@ class VOIPPlugin: public RsPlugin
 		virtual void setInterfaces(RsPlugInInterfaces& interfaces);
 
 		//================================== RsPlugin Notify ==================================//
+		virtual FeedNotify       *qt_feedNotify();
 		virtual ToasterNotify *qt_toasterNotify();
 
 	private:
@@ -70,6 +72,7 @@ class VOIPPlugin: public RsPlugin
 
 		VOIPNotify *mVOIPNotify ;
 		VOIPGUIHandler *mVOIPGUIHandler ;
+		FeedNotify *mVOIPFeedNotify;
 		VOIPToasterNotify *mVOIPToasterNotify ;
 };
 
