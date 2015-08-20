@@ -157,7 +157,7 @@ void QuickStartWizard::on_pushButtonConnectionNext_clicked()
 			rsPeers->setVisState(rsPeers->getOwnId(), vs_disc, vs_dht);
 		}
 	
-        rsConfig->SetMaxDataRates( ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value() );
+        rsConfig->SetMaxDataRates( ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value(), ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value() );
 
         ui.pagesWizard->setCurrentIndex(2);
 }
@@ -484,7 +484,9 @@ void QuickStartWizard::loadNetwork()
 
 	int dlrate = 0;
         int ulrate = 0;
-        rsConfig->GetMaxDataRates(dlrate, ulrate);
+	int dlratewi = 0;
+	int ulratewi = 0;
+	rsConfig->GetMaxDataRates(dlrate, ulrate, dlratewi, ulratewi);
         ui.doubleSpinBoxDownloadSpeed->setValue(dlrate);
         ui.doubleSpinBoxUploadSpeed->setValue(ulrate);
 
@@ -568,7 +570,7 @@ void QuickStartWizard::saveChanges()
 	  rsPeers->setExtAddress(rsPeers->getOwnId(), ui.extAddress->text().toStdString(), ui.extPort->value());
 	}*/
 
-        rsConfig->SetMaxDataRates( ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value() );
+	rsConfig->SetMaxDataRates( ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value(), ui.doubleSpinBoxDownloadSpeed->value(), ui.doubleSpinBoxUploadSpeed->value() );
 	loadNetwork();
 }
 

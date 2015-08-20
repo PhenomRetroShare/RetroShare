@@ -55,6 +55,10 @@ p3ServerConfig::p3ServerConfig(p3PeerMgr *peerMgr, p3LinkMgr *linkMgr, p3NetMgr 
 	mUserLevel = RSCONFIG_USER_LEVEL_NEW; /* START LEVEL */
 	mRateDownload =  DEFAULT_DOWNLOAD_KB_RATE;
 	mRateUpload = DEFAULT_UPLOAD_KB_RATE;
+	mRateDownloadWhenIdle =  DEFAULT_DOWNLOAD_KB_RATE;
+	mRateUploadWhenIdle = DEFAULT_UPLOAD_KB_RATE;
+
+	mIsIdle = false;
 
 	mOpMode = RS_OPMODE_FULL;
 
@@ -73,13 +77,24 @@ void p3ServerConfig::load_config()
 	/* get the real bandwidth setting from GeneralConfig */
         std::string rates = mGeneralConfig -> getSetting(pqih_ftr);
 
-        float mri, mro;
-        if (2 == sscanf(rates.c_str(), "%f %f", &mri, &mro))
+	float mri, mro, mrii, mroi;
+	if (4 == sscanf(rates.c_str(), "%f %f %f %f", &mri, &mro, &mrii, &mroi))
         {
 		RsStackMutex stack(configMtx); /******* LOCKED MUTEX *****/
 
 		mRateDownload = mri;
 		mRateUpload = mro;
+		mRateDownloadWhenIdle = mrii;
+		mRateUploadWhenIdle = mroi;
+	}
+	else if (2 == sscanf(rates.c_str(), "%f %f", &mri, &mro))
+	{
+		RsStackMutex stack(configMtx); /******* LOCKED MUTEX *****/
+
+		mRateDownload = mri;
+		mRateUpload = mro;
+		mRateDownloadWhenIdle = mri;
+		mRateUploadWhenIdle = mro;
         }
         else
         {
@@ -431,8 +446,13 @@ bool p3ServerConfig::switchToOperatingMode(uint32_t opMode)
 
 	{
 		RsStackMutex stack(configMtx); /******* LOCKED MUTEX *****/
+		if (mIsIdle) {
+			dl_rate = mRateDownloadWhenIdle;
+			ul_rate = mRateUploadWhenIdle;
+		} else {
 		dl_rate = mRateDownload;
 		ul_rate = mRateUpload;
+		}
 	}
 
 	std::cerr << "p3ServerConfig::switchToOperatingMode(" << opMode << ")";
@@ -507,7 +527,7 @@ bool p3ServerConfig::switchToOperatingMode(uint32_t opMode)
 /* handle data rates.
  * Mutex must be handled at the lower levels: TODO */
 
-int p3ServerConfig::SetMaxDataRates( int downKb, int upKb ) /* in kbrates */
+int p3ServerConfig::SetMaxDataRates( int downKb, int upKb , int downKBWhenIdle , int upKBWhenIdle) /* in kbrates */
 {
         char line[512];
 
@@ -515,7 +535,9 @@ int p3ServerConfig::SetMaxDataRates( int downKb, int upKb ) /* in kbrates */
 		RsStackMutex stack(configMtx); /******* LOCKED MUTEX *****/
 		mRateDownload = downKb;
 		mRateUpload = upKb;
-        	sprintf(line, "%f %f", mRateDownload, mRateUpload);
+		mRateDownloadWhenIdle = downKBWhenIdle;
+		mRateUploadWhenIdle = upKBWhenIdle;
+		sprintf(line, "%f %f %f %f", mRateDownload, mRateUpload, mRateDownloadWhenIdle, mRateUploadWhenIdle);
 	}
 	mGeneralConfig->setSetting(pqih_ftr, std::string(line));
 
@@ -524,12 +546,15 @@ int p3ServerConfig::SetMaxDataRates( int downKb, int upKb ) /* in kbrates */
 }
 
 
-int p3ServerConfig::GetMaxDataRates( int &inKb, int &outKb ) /* in kbrates */
+int p3ServerConfig::GetMaxDataRates(int &downKb, int &upKb , int &downKBWhenIdle, int &upKBWhenIdle) /* in kbrates */
 {
 	RsStackMutex stack(configMtx); /******* LOCKED MUTEX *****/
 
-	inKb = mRateDownload;
-	outKb = mRateUpload;
+	downKb = mRateDownload;
+	upKb = mRateUpload;
+	downKBWhenIdle = mRateDownloadWhenIdle;
+	upKBWhenIdle = mRateUploadWhenIdle;
+
         return 1;
 }
 
@@ -539,4 +564,8 @@ int p3ServerConfig::GetCurrentDataRates( float &inKb, float &outKb )
 	return 1;
 }
 
+void p3ServerConfig::setIsIdle(bool isIdle)
+{
+	mIsIdle = isIdle;
+}
 

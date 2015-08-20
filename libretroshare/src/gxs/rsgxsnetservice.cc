@@ -266,7 +266,7 @@ static const uint32_t RS_NXS_ITEM_ENCRYPTION_STATUS_GXS_KEY_MISSING     = 0x05 ;
 
 static const RsPeerId     peer_to_print     = RsPeerId(std::string(""))   ;
 static const RsGxsGroupId group_id_to_print = RsGxsGroupId(std::string("" )) ;	// use this to allow to this group id only, or "" for all IDs
-static const uint32_t     service_to_print  = 0x218 ;                       	// use this to allow to this service id only, or 0 for all services
+static const uint32_t     service_to_print  = 0 ;                       	// use this to allow to this service id only, or 0 for all services
 										// warning. Numbers should be SERVICE IDS (see serialiser/rsserviceids.h. E.g. 0x0215 for forums)
 
 class nullstream: public std::ostream {};
@@ -283,7 +283,6 @@ static std::string nice_time_stamp(time_t now,time_t TS)
     }
 }
 
-   
 static std::ostream& gxsnetdebug(const RsPeerId& peer_id,const RsGxsGroupId& grp_id,uint32_t service_type) 
 {
     static nullstream null ;
@@ -517,9 +516,10 @@ public:
         }
 
 		int maxIn=50,maxOut=50;
+		int maxInWI=50,maxOutWI=50;
 		float currIn=0,currOut=0 ;
 
-		rsConfig->GetMaxDataRates(maxIn,maxOut) ;
+		rsConfig->GetMaxDataRates(maxIn,maxOut,maxInWI,maxOutWI) ;
 		rsConfig->GetCurrentDataRates(currIn,currOut) ;
 
 		RsConfigDataRates rates ;
@@ -1468,7 +1468,9 @@ public:
         else if((gsui = dynamic_cast<RsGxsServerGrpUpdateItem*>(item)) != NULL)
         {
             if(mServerGrpUpdateItem == NULL)
+            {
                 mServerGrpUpdateItem = gsui;
+            }
             else
             {
                 std::cerr << "Error! More than one server group update item exists!" << std::endl;

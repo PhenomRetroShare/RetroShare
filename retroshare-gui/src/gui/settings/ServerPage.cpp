@@ -285,9 +285,13 @@ void ServerPage::load()
 
 	int dlrate = 0;
 	int ulrate = 0;
-	rsConfig->GetMaxDataRates(dlrate, ulrate);
+	int dlratewi = 0;
+	int ulratewi = 0;
+	rsConfig->GetMaxDataRates(dlrate, ulrate, dlratewi, ulratewi);
 	ui.totalDownloadRate->setValue(dlrate);
 	ui.totalUploadRate->setValue(ulrate);
+	ui.totalDownloadRateWhenIdle->setValue(dlratewi);
+	ui.totalUploadRateWhenIdle->setValue(ulratewi);
 
 	toggleUPnP();
 
@@ -738,8 +742,6 @@ void ServerPage::toggleUPnP()
 
 void ServerPage::saveAddresses()
 {
-	QString str;
-
 	bool saveAddr = false;
 
 	if (mIsHiddenNode)
@@ -815,7 +817,7 @@ void ServerPage::saveAddresses()
 	}
 
 	rsPeers->setDynDNS(ownId, ui.dynDNS->text().toStdString());
-	rsConfig->SetMaxDataRates( ui.totalDownloadRate->value(), ui.totalUploadRate->value() );
+	rsConfig->SetMaxDataRates( ui.totalDownloadRate->value(), ui.totalUploadRate->value(), ui.totalDownloadRateWhenIdle->value(), ui.totalUploadRateWhenIdle->value());
 
 	// HANDLE PROXY SERVER.
 	std::string orig_proxyaddr, new_proxyaddr;
@@ -910,9 +912,13 @@ void ServerPage::loadHiddenNode()
 	// Download Rates - Stay the same as before.
 	int dlrate = 0;
 	int ulrate = 0;
-	rsConfig->GetMaxDataRates(dlrate, ulrate);
+	int dlratewi = 0;
+	int ulratewi = 0;
+	rsConfig->GetMaxDataRates(dlrate, ulrate, dlratewi, ulratewi);
 	ui.totalDownloadRate->setValue(dlrate);
 	ui.totalUploadRate->setValue(ulrate);
+	ui.totalDownloadRateWhenIdle->setValue(dlratewi);
+	ui.totalUploadRateWhenIdle->setValue(ulratewi);
 
 	// Addresses.
 	ui.localAddress->setEnabled(false);
@@ -1136,7 +1142,7 @@ void ServerPage::saveAddressesHiddenNode()
 		rsPeers->setProxyServer(RS_HIDDEN_TYPE_I2P, new_proxyaddr, new_proxyport);
 	}
 
-	rsConfig->SetMaxDataRates( ui.totalDownloadRate->value(), ui.totalUploadRate->value() );
+	rsConfig->SetMaxDataRates( ui.totalDownloadRate->value(), ui.totalUploadRate->value(), ui.totalDownloadRateWhenIdle->value(), ui.totalUploadRateWhenIdle->value());
 	load();
 }
 void ServerPage::updateOutProxyIndicator()
