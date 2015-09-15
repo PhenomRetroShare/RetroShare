@@ -47,6 +47,10 @@ NotifyPage::NotifyPage(QWidget * parent, Qt::WindowFlags flags)
     connect(ui.chatLobbies_CountFollowingText,SIGNAL(toggled(bool)),ui.chatLobbies_TextToNotify,SLOT(setEnabled(bool))) ;
 
   ui.notify_Blogs->hide();
+  
+#ifdef RS_LIGHT_VERSION
+  ui.notify_ForumNewMsg->setVisible(false);
+#endif
 
   QFont font = ui.notify_Peers->font(); // use font from existing checkbox
 

@@ -66,7 +66,9 @@ QString TransferUserNotify::getNotifyMessage(bool plural)
 
 void TransferUserNotify::iconClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Transfers);
+#endif
 }
 
 void TransferUserNotify::downloadCountChanged(int count)

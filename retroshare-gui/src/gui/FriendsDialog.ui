@@ -6,11 +6,11 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>678</width>
+    <width>787</width>
     <height>491</height>
    </rect>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_8">
    <property name="margin">
     <number>0</number>
    </property>
@@ -172,41 +172,203 @@
         </widget>
        </item>
        <item>
-        <widget class="FriendList" name="friendList" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QFrame" name="liteFrame">
+         <property name="styleSheet">
+          <string notr="true">QFrame{
+   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FEFEFE, stop:1 #E8E8E8);
+	border: 1px solid #CCCCCC;
+}</string>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="margin">
+           <number>1</number>
+          </property>
+          <item>
+           <widget class="QToolButton" name="contactsButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="images.qrc">
+              <normaloff>:/images/user/friends32.png</normaloff>:/images/user/friends32.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="lobbiesButton">
+            <property name="icon">
+             <iconset resource="images.qrc">
+              <normaloff>:/images/chat_32.png</normaloff>:/images/chat_32.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="mailButton">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="images.qrc">
+              <normaloff>:/images/folder_inbox64.png</normaloff>:/images/folder_inbox64.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QStackedWidget" name="stackedWidgetList">
+         <property name="currentIndex">
+          <number>0</number>
          </property>
+         <widget class="QWidget" name="page_2">
+          <layout class="QGridLayout" name="gridLayout_7">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="FriendList" name="widget_2" native="true"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_1">
+          <layout class="QGridLayout" name="gridLayout_6">
+           <property name="margin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QTabWidget" name="tabWidget_2">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Friends</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="FriendList" name="friendList" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>150</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_2">
+              <attribute name="title">
+               <string>People</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="margin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="PeopleList" name="widget" native="true"/>
+               </item>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="ChatTabWidget" name="tabWidget">
+     <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <property name="tabsClosable">
-       <bool>true</bool>
-      </property>
-      <widget class="QWidget" name="groupChatTab">
-       <attribute name="icon">
-        <iconset resource="images.qrc">
-         <normaloff>:/images/kblogger.png</normaloff>:/images/kblogger.png</iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Broadcast</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_3">
+      <widget class="QWidget" name="page">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <property name="margin">
+         <number>0</number>
+        </property>
         <item row="0" column="0">
-         <widget class="ChatWidget" name="chatWidget" native="true"/>
+         <widget class="ChatTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="groupChatTab">
+           <attribute name="icon">
+            <iconset resource="images.qrc">
+             <normaloff>:/images/kblogger.png</normaloff>:/images/kblogger.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Broadcast</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="ChatWidget" name="chatWidget" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -318,6 +480,21 @@
     <string>Reset font to default</string>
    </property>
   </action>
+  <action name="editIdentity">
+   <property name="text">
+    <string>Edit Identity</string>
+   </property>
+  </action>
+  <action name="chatIdentity">
+   <property name="text">
+    <string>Chat</string>
+   </property>
+  </action>
+  <action name="removeIdentity">
+   <property name="text">
+    <string>Remove Identity</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -352,6 +529,12 @@
    <class>ChatWidget</class>
    <extends>QWidget</extends>
    <header location="global">gui/chat/ChatWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PeopleList</class>
+   <extends>QWidget</extends>
+   <header>gui/common/PeopleList.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

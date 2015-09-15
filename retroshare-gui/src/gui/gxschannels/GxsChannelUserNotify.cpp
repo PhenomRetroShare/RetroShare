@@ -47,5 +47,7 @@ QIcon GxsChannelUserNotify::getMainIcon(bool hasNew)
 
 void GxsChannelUserNotify::iconClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Channels);
+#endif
 }

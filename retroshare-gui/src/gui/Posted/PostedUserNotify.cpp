@@ -47,5 +47,7 @@ QIcon PostedUserNotify::getMainIcon(bool hasNew)
 
 void PostedUserNotify::iconClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Posted);
+#endif
 }

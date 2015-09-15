@@ -32,7 +32,7 @@ class QAction;
 class NetworkDialog;
 class NetworkView;
 class IdDialog;
-class CirclesDialog;
+
 
 class FriendsDialog : public RsAutoUpdatePage
 {
@@ -42,12 +42,9 @@ public:
 		 enum Page {
 						 /* Fixed numbers for load and save the last page */
 			 				IdTab              = 0,  /** Identities page. */
-#ifdef RS_USE_CIRCLES
-							CirclesTab         = 1,  /** Circles page. */
-#endif
-							NetworkTab         = 2,  /** Network page. */
-							NetworkViewTab     = 3,  /** Network new graph. */
-							BroadcastTab       = 4   /** Old group chat page. */
+							NetworkTab         = 1,  /** Network page. */
+							NetworkViewTab     = 2,  /** Network new graph. */
+							BroadcastTab       = 3   /** Old group chat page. */
 							
 		 };
 
@@ -72,11 +69,7 @@ public:
 	 NetworkDialog *networkDialog ;
 	 NetworkView *networkView ;
 	 
-#ifdef RS_USE_CIRCLES
-	 CirclesDialog *circlesDialog;
-#endif
 	 IdDialog *idDialog;
-	 
 protected:
     void showEvent (QShowEvent *event);
 
@@ -94,13 +87,17 @@ private slots:
 
     void clearChatNotify();
 
+    void setViewMode(int viewMode);
+
     //void newsFeedChanged(int count);
 
 signals:
     void notifyGroupChat(const QString&,const QString&) ;
 
 private:
-    void processSettings(bool bLoad);
+  void processSettings(bool bLoad);
+
+	int viewMode();
 
     /** Qt Designer generated object */
     Ui::FriendsDialog ui;

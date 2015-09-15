@@ -89,6 +89,7 @@ public:
         Network            = 0,  /** Network page. */
         Friends            = 1,  /** Friends page. */
         ChatLobby          = 2,  /** Chat Lobby page. */
+#ifndef RS_LIGHT_VERSION
         Transfers          = 3,  /** Transfers page. */
         SharedDirectories  = 4,  /** Shared Directories page. */
         Messages           = 5,  /** Messages page. */
@@ -102,6 +103,8 @@ public:
         Links              = 10,  /** Links page. */
 #endif
         Posted             = 11,  /** Posted links */
+        
+#endif
     };
 
     /** Create main window */
@@ -131,9 +134,11 @@ public:
 
 //    NetworkDialog     *networkDialog;
 //    SearchDialog      *searchDialog;
-
+#ifndef RS_LIGHT_VERSION
 	 NewsFeed          *newsFeed;
+#endif
 	 FriendsDialog     *friendsDialog;
+#ifndef RS_LIGHT_VERSION
 	 TransfersDialog   *transfersDialog;
 	 ChatLobbyWidget   *chatLobbyDialog;
 	 MessagesDialog    *messagesDialog;
@@ -141,6 +146,7 @@ public:
 	 GxsChannelDialog  *gxschannelDialog ;
 	 GxsForumsDialog   *gxsforumDialog ;
 	 PostedDialog      *postedDialog;
+#endif
 
 //    ForumsDialog      *forumsDialog;
 //    ChannelFeed       *channelFeed;

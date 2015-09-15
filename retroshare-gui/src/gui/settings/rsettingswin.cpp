@@ -143,9 +143,11 @@ RSettingsWin::initStackedWidget()
     addPage(new NotifyPage());
     addPage(new CryptoPage());
     addPage(new MessagePage());
+#ifndef RS_LIGHT_VERSION
     addPage(new ChannelPage());
     addPage(new ForumPage());
-	addPage(new PostedPage());
+	  addPage(new PostedPage());
+#endif
     addPage(new ChatPage());
     addPage(new AppearancePage());
     addPage(new SoundPage() );

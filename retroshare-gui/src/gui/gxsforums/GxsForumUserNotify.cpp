@@ -48,5 +48,7 @@ QIcon GxsForumUserNotify::getMainIcon(bool hasNew)
 
 void GxsForumUserNotify::iconClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Forums);
+#endif
 }

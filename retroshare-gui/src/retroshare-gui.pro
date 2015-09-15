@@ -4,7 +4,7 @@ TEMPLATE = app
 QT     += network xml
 CONFIG += qt gui uic qrc resources idle bitdht
 CONFIG += link_prl
-TARGET = RetroShare06
+#TARGET = RetroShare06
 
 # Plz never commit the .pro with these flags enabled.
 # Use this flag when developping new features only.
@@ -31,7 +31,13 @@ CONFIG += gxsforums
 CONFIG += gxschannels
 CONFIG += posted
 CONFIG += gxsgui
+CONFIG += retrolite
 
+retrolite{
+DEFINES += RS_LIGHT_VERSION
+TARGET = RetroLite
+
+}
 # Other Disabled Bits.
 #CONFIG += framecatcher
 #CONFIG += blogs
@@ -451,6 +457,7 @@ HEADERS +=  rshare.h \
             gui/common/RSTreeView.h \
             gui/common/AvatarWidget.h \
             gui/common/FriendList.h \
+            gui/common/PeopleList.h \
             gui/common/FriendSelectionWidget.h \
             gui/common/FriendSelectionDialog.h \
             gui/common/HashBox.h \
@@ -608,6 +615,7 @@ FORMS +=    gui/StartDialog.ui \
             gui/common/GroupTreeWidget.ui \
             gui/common/AvatarWidget.ui \
             gui/common/FriendList.ui \
+            gui/common/PeopleList.ui \
             gui/common/FriendSelectionWidget.ui \
             gui/common/HashBox.ui \
             gui/common/RSImageBlockWidget.ui \
@@ -758,6 +766,7 @@ SOURCES +=  main.cpp \
             gui/common/RSTreeView.cpp \
             gui/common/AvatarWidget.cpp \
             gui/common/FriendList.cpp \
+            gui/common/PeopleList.cpp \
             gui/common/FriendSelectionWidget.cpp \
             gui/common/FriendSelectionDialog.cpp \
             gui/common/HashBox.cpp \
