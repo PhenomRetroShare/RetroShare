@@ -366,6 +366,7 @@ HEADERS +=  rshare.h \
             util/QtVersion.h \
             util/RsFile.h \
             gui/profile/ProfileWidget.h \
+            gui/profile/ProfilePage.h \
             gui/profile/ProfileManager.h \
             gui/profile/StatusMessage.h \
             gui/chat/PopupChatWindow.h \
@@ -556,6 +557,7 @@ FORMS +=    gui/StartDialog.ui \
             gui/HelpDialog.ui \
             gui/ServicePermissionDialog.ui \
             gui/profile/ProfileWidget.ui \
+            gui/profile/ProfilePage.ui\
             gui/profile/StatusMessage.ui \
             gui/profile/ProfileManager.ui \
             gui/chat/PopupChatWindow.ui \
@@ -712,6 +714,7 @@ SOURCES +=  main.cpp \
             util/ObjectPainter.cpp \
             util/RsFile.cpp \
             gui/profile/ProfileWidget.cpp \
+            gui/profile/ProfilePage.cpp \            
             gui/profile/StatusMessage.cpp \
             gui/profile/ProfileManager.cpp \
             gui/chat/PopupChatWindow.cpp \

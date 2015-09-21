@@ -73,6 +73,8 @@ private slots:
 private:
 	void processSettings(bool load);
 
+	void requestIdDetails();
+	void insertIdDetails(uint32_t token);
 
 	void requestIdList();
 	void requestIdData(std::list<RsGxsGroupId> &ids);

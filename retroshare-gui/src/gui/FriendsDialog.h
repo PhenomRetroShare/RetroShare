@@ -32,7 +32,7 @@ class QAction;
 class NetworkDialog;
 class NetworkView;
 class IdDialog;
-
+class ChatLobbyWidget;
 
 class FriendsDialog : public RsAutoUpdatePage
 {
@@ -44,7 +44,8 @@ public:
 			 				IdTab              = 0,  /** Identities page. */
 							NetworkTab         = 1,  /** Network page. */
 							NetworkViewTab     = 2,  /** Network new graph. */
-							BroadcastTab       = 3   /** Old group chat page. */
+							BroadcastTab       = 3,   /** Old group chat page. */
+							Chatlobby          = 4
 							
 		 };
 
@@ -64,10 +65,15 @@ public:
     static bool isGroupChatActive();
     static void groupChatActivate();
 
+  void addWidget(QWidget *w);
+
 	 void activatePage(FriendsDialog::Page page) ;
 
 	 NetworkDialog *networkDialog ;
 	 NetworkView *networkView ;
+	
+   ChatLobbyWidget   *chatLobbyDialog;
+
 	 
 	 IdDialog *idDialog;
 protected:

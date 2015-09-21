@@ -213,7 +213,7 @@ CreateLobbyDialog QLabel#lobbyInfoLabel {
 }
 
 ChatWidget QTextEdit#chatTextEdit, ChatWidget QTextBrowser#textBrowser {
-	border: 1px solid #B8B6B1;
+	border: 1px solid #FF0883BB;
 	border-radius: 6px;
 	background: white;
 }
@@ -660,4 +660,8 @@ IdEditDialog QLabel#info_label
 	border-radius: 6px;
 	background: #FFFFD7;
 	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFFFD7, stop:1 #FFFFB2);
+}
+
+FriendsDialog QToolButton#profileButton {
+	color: rgb(255, 255, 255);
 }

@@ -43,6 +43,7 @@
 
 // Data Requests.
 #define IDDIALOG_IDLIST     1
+#define IDDIALOG_IDDETAILS  2
 
 /****************************************************************
  */
@@ -125,6 +126,7 @@ PeopleList::PeopleList(QWidget *parent) :
 
 	mIdQueue = new TokenQueue(rsIdentity->getTokenService(), this);
 
+	mStateHelper->setActive(IDDIALOG_IDDETAILS, false);
 
 }
 
@@ -186,7 +188,7 @@ void PeopleList::updateSelection()
 
 	if (id != mId) {
 		mId = id;
-		//requestIdDetails();
+		requestIdDetails();
 		//requestRepList();
 	}
 }
@@ -410,6 +412,85 @@ void PeopleList::insertIdList(uint32_t token)
 
 	updateSelection();
 }
+
+void PeopleList::requestIdDetails()
+{
+	mIdQueue->cancelActiveRequestTokens(IDDIALOG_IDDETAILS);
+
+	if (mId.isNull())
+	{
+		mStateHelper->setActive(IDDIALOG_IDDETAILS, false);
+		mStateHelper->setLoading(IDDIALOG_IDDETAILS, false);
+		mStateHelper->clear(IDDIALOG_IDDETAILS);
+
+		return;
+	}
+
+	mStateHelper->setLoading(IDDIALOG_IDDETAILS, true);
+
+	RsTokReqOptions opts;
+	opts.mReqType = GXS_REQUEST_TYPE_GROUP_DATA;
+
+	uint32_t token;
+	std::list<RsGxsGroupId> groupIds;
+	groupIds.push_back(mId);
+
+	mIdQueue->requestGroupInfo(token, RS_TOKREQ_ANSTYPE_DATA, opts, groupIds, IDDIALOG_IDDETAILS);
+}
+
+void PeopleList::insertIdDetails(uint32_t token)
+{
+	mStateHelper->setLoading(IDDIALOG_IDDETAILS, false);
+
+	/* get details from libretroshare */
+	RsGxsIdGroup data;
+	std::vector<RsGxsIdGroup> datavector;
+	if (!rsIdentity->getGroupData(token, datavector))
+	{
+		mStateHelper->setActive(IDDIALOG_IDDETAILS, false);
+		//mStateHelper->clear(IDDIALOG_REPLIST);
+
+		return;
+	}
+
+	if (datavector.size() != 1)
+	{
+#ifdef ID_DEBUG
+		std::cerr << "IdDialog::insertIdDetails() Invalid datavector size";
+#endif
+
+		mStateHelper->setActive(IDDIALOG_IDDETAILS, false);
+		mStateHelper->clear(IDDIALOG_IDDETAILS);
+
+
+		return;
+	}
+
+	mStateHelper->setActive(IDDIALOG_IDDETAILS, true);
+
+	data = datavector[0];
+	
+  /* get GPG Details from rsPeers */
+	RsPgpId ownPgpId  = rsPeers->getGPGOwnId();
+	
+  bool isLinkedToOwnPgpId = (data.mPgpKnown && (data.mPgpId == ownPgpId)) ;
+  bool isOwnId = (data.mMeta.mSubscribeFlags & GXS_SERV::GROUP_SUBSCRIBE_ADMIN);
+
+	if (isOwnId)
+	{
+		ui->editIdentity->setEnabled(true);
+		ui->removeIdentity->setEnabled(true);
+		ui->chatIdentity->setEnabled(false);
+	}
+	else
+	{
+		ui->editIdentity->setEnabled(false);
+		ui->removeIdentity->setEnabled(false);
+		ui->chatIdentity->setEnabled(true);
+	}
+
+
+}
 	
 void PeopleList::updateDisplay(bool complete)
 {
@@ -418,7 +499,7 @@ void PeopleList::updateDisplay(bool complete)
 	if (complete) {
 		/* Fill complete */
 		requestIdList();
-		//requestIdDetails();
+		requestIdDetails();
 		//requestRepList();
 
 		return;
@@ -430,7 +511,7 @@ void PeopleList::updateDisplay(bool complete)
 		requestIdList();
 
 		if (!mId.isNull() && std::find(grpIds.begin(), grpIds.end(), mId) != grpIds.end()) {
-			//requestIdDetails();
+			requestIdDetails();
 			//requestRepList();
 		}
 	}
@@ -511,9 +592,9 @@ void PeopleList::loadRequest(const TokenQueue * queue, const TokenRequest &req)
 		    insertIdList(req.mToken);
 		    break;
 
-	    //case IDDIALOG_IDDETAILS:
-		    //insertIdDetails(req.mToken);
-		    //break;
+	    case IDDIALOG_IDDETAILS:
+		    insertIdDetails(req.mToken);
+		    break;
 
 	    //case IDDIALOG_REPLIST:
 		    //insertRepList(req.mToken);

@@ -74,7 +74,7 @@ ChatLobbyDialog::ChatLobbyDialog(const ChatLobbyId& lid, QWidget *parent, Qt::Wi
     ui.participantsList->setColumnHidden(COLUMN_ACTIVITY,true);
     ui.participantsList->setColumnHidden(COLUMN_ID,true);
 
-    muteAct = new QAction(QIcon(), tr("Mute participant"), this);
+	muteAct = new QAction(QIcon(), tr("Mute participant"), this);
     distantChatAct = new QAction(QIcon(":/images/chat_24.png"), tr("Start private chat"), this);
     sendMessageAct = new QAction(QIcon(":/images/mail_new.png"), tr("Send Message"), this);
 
@@ -97,7 +97,11 @@ ChatLobbyDialog::ChatLobbyDialog(const ChatLobbyId& lid, QWidget *parent, Qt::Wi
 	{
 	QIcon icon ;
 	icon.addPixmap(QPixmap(":/images/edit_add24.png")) ;
+#ifndef RS_LIGHT_VERSION
 	inviteFriendsButton->setIcon(icon) ;
+#else
+  inviteFriendsButton->setIcon(QIcon(":/icons/addfriend_256.png"));
+#endif
     inviteFriendsButton->setIconSize(QSize(2*S,2*S)) ;
 	}
 
@@ -131,7 +135,11 @@ ChatLobbyDialog::ChatLobbyDialog(const ChatLobbyId& lid, QWidget *parent, Qt::Wi
 	{
 	QIcon icon ;
 	icon.addPixmap(QPixmap(":/images/door_in.png")) ;
+#ifndef RS_LIGHT_VERSION
 	unsubscribeButton->setIcon(icon) ;
+#else
+	unsubscribeButton->setIcon(QIcon(":/icons/close_256.png"));
+#endif
     unsubscribeButton->setIconSize(QSize(1.5*S,1.5*S)) ;
 	}
 
@@ -178,10 +186,9 @@ void ChatLobbyDialog::participantsTreeWidgetCustomPopupMenu(QPoint)
     contextMnu.addSeparator();
     contextMnu.addAction(muteAct);
 
-
 	muteAct->setCheckable(true);
 	muteAct->setEnabled(false);
-	muteAct->setChecked(false);
+    muteAct->setChecked(false);
 
     if (selectedItems.size())
     {
@@ -754,7 +761,9 @@ void ChatLobbyDialog::showDialog(uint chatflags)
 {
 	if (chatflags & RS_CHAT_FOCUS) 
 	{
+#ifndef RS_LIGHT_VERSION
 		MainWindow::showWindow(MainWindow::ChatLobby);
 		dynamic_cast<ChatLobbyWidget*>(MainWindow::getPage(MainWindow::ChatLobby))->setCurrentChatPage(this) ;
+#endif
 	}
 }
