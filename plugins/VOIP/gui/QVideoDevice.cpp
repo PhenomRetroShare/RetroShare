@@ -7,7 +7,7 @@
 #include "VideoProcessor.h"
 
 QVideoInputDevice::QVideoInputDevice(QWidget *parent)
-  :QObject(parent)
+    :QObject(parent)
 {
 	_timer = NULL ;
 	_capture_device = NULL ;
@@ -17,7 +17,7 @@ QVideoInputDevice::QVideoInputDevice(QWidget *parent)
 
 bool QVideoInputDevice::stopped()
 {
-    return _timer == NULL ;
+	return _timer == NULL ;
 }
 
 void QVideoInputDevice::stop()
@@ -31,21 +31,22 @@ void QVideoInputDevice::stop()
 	}
 	if(_capture_device != NULL)
 	{
-		cvReleaseCapture(&_capture_device) ;
+		// the camera will be deinitialized automatically in VideoCapture destructor
+		delete _capture_device ;
 		_capture_device = NULL ;
 	}
 }
 void QVideoInputDevice::start()
 {
-	// make sure everything is re-initialised 
+	// make sure everything is re-initialised
 	//
 	stop() ;
 
-	// Initialise la capture  
+	// Initialise la capture
 	static const int cam_id = 0 ;
-	_capture_device = cvCaptureFromCAM(cam_id);
+	_capture_device = new cv::VideoCapture(cam_id);
 
-	if(_capture_device == NULL)
+	if(!_capture_device->isOpened())
 	{
 		std::cerr << "Cannot initialise camera. Something's wrong." << std::endl;
 		return ;
@@ -59,65 +60,64 @@ void QVideoInputDevice::start()
 
 void QVideoInputDevice::grabFrame()
 {
-    if(!_timer)
-        return ;
-    
-    IplImage *img=cvQueryFrame(_capture_device);    
+	if(!_timer)
+		return ;
 
-    if(img == NULL)
-    {
-	    std::cerr << "(EE) Cannot capture image from camera. Something's wrong." << std::endl;
-	    return ;
-    }
-    // get the image data
+	cv::Mat frame;
+	if(!_capture_device->read(frame))
+	{
+		std::cerr << "(EE) Cannot capture image from camera. Something's wrong." << std::endl;
+		return ;
+	}
 
-    if(img->nChannels != 3)
-    {
-	    std::cerr << "(EE) expected 3 channels. Got " << img->nChannels << std::endl;
-	    return ;
-    }
+	// get the image data
 
-    // convert to RGB and copy to new buffer, because cvQueryFrame tells us to not modify the buffer
-    cv::Mat img_rgb;
-    cv::cvtColor(cv::Mat(img), img_rgb, CV_BGR2RGB);
+	if(frame.channels() != 3)
+	{
+		std::cerr << "(EE) expected 3 channels. Got " << frame.channels() << std::endl;
+		return ;
+	}
 
-    QImage image = QImage(img_rgb.data,img_rgb.cols,img_rgb.rows,QImage::Format_RGB888);
+	// convert to RGB and copy to new buffer, because cvQueryFrame tells us to not modify the buffer
+	cv::Mat img_rgb;
+	cv::cvtColor(frame, img_rgb, CV_BGR2RGB);
+	QImage image = QImage(img_rgb.data,img_rgb.cols,img_rgb.rows,QImage::Format_RGB888);
 
-    if(_video_processor != NULL) 
-    {
-	    _video_processor->processImage(image) ;
+	if(_video_processor != NULL)
+	{
+		_video_processor->processImage(image) ;
 
-	    emit networkPacketReady() ;
-    }
-    if(_echo_output_device != NULL) 
-	    _echo_output_device->showFrame(image) ;
+		emit networkPacketReady() ;
+	}
+	if(_echo_output_device != NULL)
+		_echo_output_device->showFrame(image) ;
 }
 
 bool QVideoInputDevice::getNextEncodedPacket(RsVOIPDataChunk& chunk)
 {
-    if(!_timer)
-        return false ;
-    
-    if(_video_processor)
-	    return _video_processor->nextEncodedPacket(chunk) ;
-    else 
-        return false ;
+	if(!_timer)
+		return false ;
+
+	if(_video_processor)
+		return _video_processor->nextEncodedPacket(chunk) ;
+	else
+		return false ;
 }
 
 uint32_t QVideoInputDevice::currentBandwidth() const
 {
-  return _video_processor->currentBandwidthOut() ;  
+	return _video_processor->currentBandwidthOut() ;
 }
 
 QVideoInputDevice::~QVideoInputDevice()
 {
-    stop() ;
-    _video_processor = NULL ;
+	stop() ;
+	_video_processor = NULL ;
 }
 
 
 QVideoOutputDevice::QVideoOutputDevice(QWidget *parent)
-	: QLabel(parent)
+    : QLabel(parent)
 {
 	showFrameOff() ;
 }
@@ -129,7 +129,7 @@ void QVideoOutputDevice::showFrameOff()
 
 void QVideoOutputDevice::showFrame(const QImage& img)
 {
-    std::cerr << "img.size = " << img.width() << " x " << img.height() << std::endl;
-	setPixmap(QPixmap::fromImage(img).scaled( QSize(height()*640/480,height()),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)) ;
+	std::cerr << "img.size = " << img.width() << " x " << img.height() << std::endl;
+	setPixmap(QPixmap::fromImage(img).scaled( QSize(height()*4/3,height()),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)) ;
 }
 
