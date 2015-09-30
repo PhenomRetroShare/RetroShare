@@ -60,5 +60,17 @@
 		<file>icons/user-busy_64.png</file>
 		<file>icons/user-offline_64.png</file>
 		<file>icons/user-online_64.png</file>
+		<file>icons/mail_256.png</file>
+		<file>icons/chat_256.png</file>
+		<file>icons/contacts_256.png</file>
+		<file>icons/photo_256.png</file>
+		<file>icons/settings_256.png</file>
+		<file>icons/RSS_256.png</file>
+		<file>icons/Text_256.png</file>
+		<file>icons/Tux_256.png</file>
+		<file>icons/info_256.png</file>
+		<file>icons/close_256.png</file>
+		<file>icons/addfriend_256.png</file>
+		<file>icons/attach_256.png</file>
 	</qresource>
 </RCC>

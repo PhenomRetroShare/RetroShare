@@ -124,6 +124,11 @@ MessagesDialog::MessagesDialog(QWidget *parent)
     /* Invoke the Qt Designer generated object setup routine */
     ui.setupUi(this);
 
+#ifdef RS_LIGHT_VERSION
+    ui.titleBarPixmap->setVisible(false);
+    ui.titleBarLabel->setVisible(false);
+#endif
+
     inProcessSettings = false;
     inChange = false;
     lockUpdate = 0;

@@ -34,6 +34,11 @@ FriendsDialog QLabel#nicknameLabel
 	qproperty-fontSizeFactor: 200;
 }
 
+FriendsDialog QToolButton#profileButton
+{
+	qproperty-fontSizeFactor: 200;
+}
+
 ChatMsgItem QLabel#peerNameLabel
 {
 	qproperty-fontSizeFactor: 175;

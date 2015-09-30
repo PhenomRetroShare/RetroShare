@@ -44,6 +44,8 @@ MessageToaster::MessageToaster(const std::string &peerId, const QString &title, 
 
 void MessageToaster::openmessageClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Messages);
+#endif
 	hide();
 }

@@ -312,9 +312,11 @@ void ChatLobbyUserNotify::subMenuClicked(QAction* action)
 {
 	ActionTag actionTag=action->data().value<ActionTag>();
 	if(!actionTag.removeALL){
+#ifndef RS_LIGHT_VERSION
 		MainWindow::showWindow(MainWindow::ChatLobby);
 		ChatLobbyWidget *chatLobbyWidget = dynamic_cast<ChatLobbyWidget*>(MainWindow::getPage(MainWindow::ChatLobby));
 		if (chatLobbyWidget) chatLobbyWidget->showLobbyAnchor(actionTag.cli ,actionTag.timeStamp);
+#endif
 	}
 
 	lobby_map::iterator itCL=_listMsg.find(actionTag.cli);

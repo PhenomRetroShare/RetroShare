@@ -59,5 +59,7 @@ unsigned int MessageUserNotify::getNewCount()
 
 void MessageUserNotify::iconClicked()
 {
+#ifndef RS_LIGHT_VERSION
 	MainWindow::showWindow(MainWindow::Messages);
+#endif
 }

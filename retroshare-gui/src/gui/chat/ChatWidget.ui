@@ -476,9 +476,6 @@ border-image: url(:/images/closepressed.png)
        </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-         </property>
          <item>
           <widget class="QLabel" name="typingpixmapLabel">
            <property name="minimumSize">
@@ -503,18 +500,18 @@ border-image: url(:/images/closepressed.png)
          </item>
          <item>
           <widget class="QLabel" name="typingLabel">
+           <property name="maximumSize">
+            <size>
+             <width>400</width>
+             <height>18</height>
+            </size>
+           </property>
            <property name="margin">
             <number>0</number>
            </property>
            <property name="indent">
             <number>3</number>
            </property>
-         <property name="maximumSize">
-          <size>
-           <width>400</width>
-           <height>18</height>
-          </size>
-	 </property>
           </widget>
          </item>
         </layout>
@@ -533,7 +530,7 @@ border-image: url(:/images/closepressed.png)
            <height>30</height>
           </size>
          </property>
-         <property name="placeholderText">
+         <property name="placeholderText" stdset="0">
           <string>Type a message here</string>
          </property>
         </widget>
@@ -596,13 +593,13 @@ border-image: url(:/images/closepressed.png)
        <widget class="QToolButton" name="fontButton">
         <property name="minimumSize">
          <size>
-          <width>32</width>
+          <width>28</width>
           <height>28</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
+          <width>28</width>
           <height>28</height>
          </size>
         </property>

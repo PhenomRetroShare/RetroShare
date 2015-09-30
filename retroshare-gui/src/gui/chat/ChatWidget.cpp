@@ -69,6 +69,14 @@ ChatWidget::ChatWidget(QWidget *parent) :
     QWidget(parent), sendingBlocked(false), ui(new Ui::ChatWidget)
 {
 	ui->setupUi(this);
+	
+#ifdef RS_LIGHT_VERSION
+  ui->emoteiconButton->setIcon(QIcon(":/icons/Tux_256.png"));
+  ui->fontButton->setIcon(QIcon(":/icons/Text_256.png"));
+  ui->attachPictureButton->setIcon(QIcon(":/icons/photo_256.png"));
+  ui->addFileButton->setIcon(QIcon(":/icons/attach_256.png"));
+  ui->pushtoolsButton->setIcon(QIcon(":/icons/settings_256.png"));
+#endif
 
 	newMessages = false;
 	typing = false;

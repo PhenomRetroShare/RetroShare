@@ -1236,7 +1236,7 @@ static void processList(const QStringList &list, const QString &textSingular, co
 #ifdef DEBUG_RSLINK
 					std::cerr << " RetroShareLink::process ForumRequest : name : " << link.name().toStdString() << ". id : " << link.hash().toStdString() << ". msgId : " << link.msgId().toStdString() << std::endl;
 #endif
-
+#ifndef RS_LIGHT_VERSION
 					MainWindow::showWindow(MainWindow::Forums);
 					GxsForumsDialog *forumsDialog = dynamic_cast<GxsForumsDialog*>(MainWindow::getPage(MainWindow::Forums));
 					if (!forumsDialog) {
@@ -1256,6 +1256,7 @@ static void processList(const QStringList &list, const QString &textSingular, co
 							forumMsgUnknown.append(link.name());
 						}
 					}
+#endif
 				}
 			break;
 
@@ -1264,6 +1265,7 @@ static void processList(const QStringList &list, const QString &textSingular, co
 #ifdef DEBUG_RSLINK
 					std::cerr << " RetroShareLink::process ChannelRequest : name : " << link.name().toStdString() << ". id : " << link.hash().toStdString() << ". msgId : " << link.msgId().toStdString() << std::endl;
 #endif
+#ifndef RS_LIGHT_VERSION
 
 					MainWindow::showWindow(MainWindow::Channels);
 					GxsChannelDialog *channelDialog = dynamic_cast<GxsChannelDialog*>(MainWindow::getPage(MainWindow::Channels));
@@ -1284,6 +1286,7 @@ static void processList(const QStringList &list, const QString &textSingular, co
 							channelMsgUnknown.append(link.name());
 						}
 					}
+#endif
 				}
 			break;
 
@@ -1292,6 +1295,8 @@ static void processList(const QStringList &list, const QString &textSingular, co
 #ifdef DEBUG_RSLINK
 					std::cerr << " RetroShareLink::process SearchRequest : string : " << link.name().toStdString() << std::endl;
 #endif
+#ifndef RS_LIGHT_VERSION
+
 					SearchDialog *searchDialog = dynamic_cast<SearchDialog*>(MainWindow::getPage(MainWindow::Search));
 					if (!searchDialog) 
 					{
@@ -1302,6 +1307,7 @@ static void processList(const QStringList &list, const QString &textSingular, co
 					MainWindow::showWindow(MainWindow::Search);
 					searchDialog->searchKeywords(link.name());
 					searchStarted.append(link.name());
+#endif
 				}
 			break;
 

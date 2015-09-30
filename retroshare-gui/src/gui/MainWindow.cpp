@@ -70,9 +70,6 @@
 #include "gui/GetStartedDialog.h"
 #endif
 
-#ifdef RS_USE_CIRCLES
-#include "gui/People/PeopleDialog.h"
-#endif
 #include "idle/idle.h"
 
 #include "statusbar/peerstatus.h"
@@ -95,9 +92,7 @@
 #include "gui/gxschannels/GxsChannelDialog.h"
 #include "gui/gxsforums/GxsForumsDialog.h"
 #include "gui/Identity/IdDialog.h"
-#ifdef RS_USE_CIRCLES
-#include "gui/Circles/CirclesDialog.h"
-#endif
+
 #ifdef RS_USE_WIKI
 #include "gui/WikiPoos/WikiDialog.h"
 #endif
@@ -202,7 +197,13 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
         nameAndLocation = QString("%1 (%2)").arg(QString::fromUtf8(pd.name.c_str())).arg(QString::fromUtf8(pd.location.c_str()));
     }
 
+#ifndef RS_LIGHT_VERSION
     setWindowTitle(tr("RetroShare %1 a secure decentralized communication platform").arg(Rshare::retroshareVersion(true)) + " - " + nameAndLocation);
+#else
+    setWindowTitle(tr("RetroLite %1 a secure decentralized communication platform").arg(Rshare::retroshareVersion(true)) + " - " + nameAndLocation);
+#endif
+
+
 
     /* add url handler for RetroShare links */
     QDesktopServices::setUrlHandler(RSLINK_SCHEME, this, "retroshareLinkActivated");
@@ -356,21 +357,20 @@ void MainWindow::initStackedPage()
   /* Create the Main pages and actions */
   QActionGroup *grp = new QActionGroup(this);
 
+#ifndef RS_LIGHT_VERSION
   addPage(newsFeed = new NewsFeed(ui->stackPages), grp, &notify);
+#endif
   addPage(friendsDialog = new FriendsDialog(ui->stackPages), grp, &notify);
 
-#ifdef RS_USE_CIRCLES
+
+#ifdef RS_USE_NEW_PEOPLE_DIALOG
   PeopleDialog *peopleDialog = NULL;
   addPage(peopleDialog = new PeopleDialog(ui->stackPages), grp, &notify);
 #endif
 
+#ifndef RS_LIGHT_VERSION
   IdDialog *idDialog = NULL;
   addPage(idDialog = new IdDialog(ui->stackPages), grp, &notify);
-
-#ifdef RS_USE_CIRCLES
-  CirclesDialog *circlesDialog = NULL;
-  addPage(circlesDialog = new CirclesDialog(ui->stackPages), grp, &notify);
-#endif
 
   addPage(transfersDialog = new TransfersDialog(ui->stackPages), grp, &notify);
   addPage(chatLobbyDialog = new ChatLobbyWidget(ui->stackPages), grp, &notify);
@@ -378,6 +378,7 @@ void MainWindow::initStackedPage()
   addPage(gxschannelDialog = new GxsChannelDialog(ui->stackPages), grp, &notify);
   addPage(gxsforumDialog = new GxsForumsDialog(ui->stackPages), grp, &notify);
   addPage(postedDialog = new PostedDialog(ui->stackPages), grp, &notify);
+#endif
 
 #ifdef RS_USE_WIKI
   WikiDialog *wikiDialog = NULL;
@@ -419,6 +420,7 @@ void MainWindow::initStackedPage()
 #endif
 #endif
 
+#ifndef RS_LIGHT_VERSION
 #ifdef GETSTARTED_GUI
   MainPage *getStartedPage = NULL;
 
@@ -427,11 +429,15 @@ void MainWindow::initStackedPage()
       //ui->stackPages->add(getStartedPage = new GetStartedDialog(ui->stackPages),
       //               createPageAction(QIcon(IMG_HELP), tr("Getting Started"), grp));
       addPage(getStartedPage = new GetStartedDialog(ui->stackPages), grp, NULL);
+#endif
   }
 #endif
 
   /* Create the toolbar */
+#ifndef RS_LIGHT_VERSION
   ui->toolBarPage->addActions(grp->actions());
+#endif
+
   connect(grp, SIGNAL(triggered(QAction *)), ui->stackPages, SLOT(showPage(QAction *)));
 
 
@@ -442,12 +448,20 @@ void MainWindow::initStackedPage()
 #endif
 
   /** Add icon on Action bar */
+#ifndef RS_LIGHT_VERSION
   addAction(new QAction(QIcon(IMAGE_ADDFRIEND), tr("Add"), ui->toolBarAction), &MainWindow::addFriend, SLOT(addFriend()));
   //addAction(new QAction(QIcon(IMAGE_NEWRSCOLLECTION), tr("New"), ui->toolBarAction), &MainWindow::newRsCollection, SLOT(newRsCollection()));
   addAction(new QAction(QIcon(IMAGE_PREFERENCES), tr("Options"), ui->toolBarAction), &MainWindow::showSettings, SLOT(showSettings()));
   addAction(new QAction(QIcon(IMAGE_ABOUT), tr("About"), ui->toolBarAction), &MainWindow::showabout, SLOT(showabout()));
   addAction(new QAction(QIcon(IMAGE_QUIT), tr("Quit"), ui->toolBarAction), &MainWindow::doQuit, SLOT(doQuit()));
+#else
+  addAction(new QAction(QIcon(":/icons/addfriend_256.png"), tr("Add"), ui->toolBarAction), &MainWindow::addFriend, SLOT(addFriend()));
+  addAction(new QAction(QIcon(":/icons/settings_256.png"), tr("Options"), ui->toolBarAction), &MainWindow::showSettings, SLOT(showSettings()));
+  addAction(new QAction(QIcon(":/icons/info_256.png"), tr("About"), ui->toolBarAction), &MainWindow::showabout, SLOT(showabout()));
+  addAction(new QAction(QIcon(":/icons/close_256.png"), tr("Quit"), ui->toolBarAction), &MainWindow::doQuit, SLOT(doQuit()));
+#endif
 
+#ifndef RS_LIGHT_VERSION
   QList<QPair<MainPage*, QPair<QAction*, QListWidgetItem*> > >::iterator notifyIt;
   for (notifyIt = notify.begin(); notifyIt != notify.end(); ++notifyIt) {
       UserNotify *userNotify = notifyIt->first->getUserNotify(this);
@@ -457,7 +471,7 @@ void MainWindow::initStackedPage()
           userNotifyList.push_back(userNotify);
       }
   }
-
+#endif
 }
 
 /** Creates a new action associated with a config page. */
@@ -560,7 +574,9 @@ void MainWindow::createTrayIcon()
 
     trayMenu->addSeparator();
     trayMenu->addAction(QIcon(IMAGE_MESSENGER), tr("Open Messenger"), this, SLOT(showMessengerWindow()));
+#ifndef RS_LIGHT_VERSION
     trayMenu->addAction(QIcon(IMAGE_MESSAGES), tr("Open Messages"), this, SLOT(showMess()));
+#endif
     trayMenu->addAction(QIcon(":/images/emblem-web.png"), tr("Show web interface"), this, SLOT(showWebinterface()));
     trayMenu->addAction(QIcon(IMAGE_BWGRAPH), tr("Bandwidth Graph"), _bandwidthGraph, SLOT(showWindow()));
     trayMenu->addAction(QIcon(IMAGE_DHT), tr("Statistics"), this, SLOT(showStatisticsWindow()));
@@ -571,6 +587,9 @@ void MainWindow::createTrayIcon()
 #endif
     trayMenu->addAction(QIcon(IMAGE_PREFERENCES), tr("Options"), this, SLOT(showSettings()));
     trayMenu->addAction(QIcon(IMG_HELP), tr("Help"), this, SLOT(showHelpDialog()));
+#ifdef RS_LIGHT_VERSION
+    trayMenu->addAction(QIcon(IMAGE_ABOUT), tr("About"), this, SLOT(showabout()));
+#endif
     trayMenu->addSeparator();
     trayMenu->addAction(QIcon(IMAGE_MINIMIZE), tr("Minimize"), this, SLOT(showMinimized()));
     trayMenu->addAction(QIcon(IMAGE_MAXIMIZE), tr("Maximize"), this, SLOT(showMaximized()));
@@ -865,6 +884,7 @@ void SetForegroundWindowInternal(HWND hWnd)
     }
 
 	 switch (page) {
+#ifndef RS_LIGHT_VERSION
 		 case Search:
 			 _instance->ui->stackPages->setCurrentPage( _instance->transfersDialog );
 			 _instance->transfersDialog->activatePage(TransfersDialog::SearchTab) ;
@@ -873,9 +893,18 @@ void SetForegroundWindowInternal(HWND hWnd)
 			 _instance->ui->stackPages->setCurrentPage( _instance->friendsDialog );
 			 _instance->friendsDialog->activatePage(FriendsDialog::NetworkTab) ;
 			 break;
+#endif
 		 case Friends:
 			 _instance->ui->stackPages->setCurrentPage( _instance->friendsDialog );
 			 break;
+
+#ifdef RS_LIGHT_VERSION			 			 
+		 case ChatLobby:
+			 _instance->friendsDialog->activatePage(FriendsDialog::Chatlobby) ;
+			 break;	
+#endif		 
+			 
+#ifndef RS_LIGHT_VERSION			 
 		 case ChatLobby:
 			 _instance->ui->stackPages->setCurrentPage( _instance->chatLobbyDialog );
 			 break;
@@ -890,19 +919,15 @@ void SetForegroundWindowInternal(HWND hWnd)
 			 _instance->ui->stackPages->setCurrentPage( _instance->messagesDialog );
 			 break;
 		 case Channels:
-                         _instance->ui->stackPages->setCurrentPage( _instance->gxschannelDialog );
+       _instance->ui->stackPages->setCurrentPage( _instance->gxschannelDialog );
 			 return true ;
 		 case Forums:
-                         _instance->ui->stackPages->setCurrentPage( _instance->gxsforumDialog );
-                         return true ;
-#ifdef BLOGS
-		 case Blogs:
-			 Page = _instance->blogsFeed;
-			 return true ;
-#endif
+       _instance->ui->stackPages->setCurrentPage( _instance->gxsforumDialog );
+      return true ;
 		case Posted:
 			_instance->ui->stackPages->setCurrentPage( _instance->postedDialog );
 			return true ;
+#endif
 		 default:
 			 std::cerr << "Show page called on value that is not handled yet. Please code it! (value = " << page << ")" << std::endl;
 	 }
@@ -919,40 +944,19 @@ void SetForegroundWindowInternal(HWND hWnd)
 
    QWidget *page = _instance->ui->stackPages->currentWidget();
 
-//   if (page == _instance->networkDialog) {
-//       return Network;
-//   }
    if (page == _instance->friendsDialog) {
        return Friends;
    }
+#ifndef RS_LIGHT_VERSION
+
    if (page == _instance->chatLobbyDialog) {
        return ChatLobby;
    }
    if (page == _instance->transfersDialog) {
        return Transfers;
    }
-//   if (page == _instance->sharedfilesDialog) {
-//       return SharedDirectories;
- //  }
    if (page == _instance->messagesDialog) {
        return Messages;
-   }
-#ifdef RS_USE_LINKS
-   if (page == _instance->linksDialog) {
-       return Links;
-   }
-#endif
-#if 0
-   if (page == _instance->channelFeed) {
-       return Channels;
-   }
-   if (page == _instance->forumsDialog) {
-       return Forums;
-   }
-#endif
-#ifdef BLOGS
-   if (page == _instance->blogsFeed) {
-       return Blogs;
    }
 #endif
 
@@ -968,10 +972,18 @@ void SetForegroundWindowInternal(HWND hWnd)
 
    switch (page) 
 	{
+#ifndef RS_LIGHT_VERSION	
 		case Network:
 			return _instance->friendsDialog->networkDialog;
+#endif
 		case Friends:
 			return _instance->friendsDialog;
+#ifdef RS_LIGHT_VERSION
+		case ChatLobby:
+			return _instance->friendsDialog->chatLobbyDialog;
+#endif			
+			
+#ifndef RS_LIGHT_VERSION
 		case ChatLobby:
 			return _instance->chatLobbyDialog;
 		case Transfers:
@@ -982,19 +994,12 @@ void SetForegroundWindowInternal(HWND hWnd)
 			return _instance->transfersDialog->searchDialog;
 		case Messages:
 			return _instance->messagesDialog;
-#ifdef RS_USE_LINKS
-		case Links:
-			return _instance->linksDialog;
-#endif
 		case Channels:
 			return _instance->gxschannelDialog;
 		case Forums:
 			return _instance->gxsforumDialog;
 		case Posted:
 			return _instance->postedDialog;
-#ifdef BLOGS
-		case Blogs:
-			return _instance->blogsFeed;
 #endif
 	}
 
@@ -1030,7 +1035,9 @@ void MainWindow::openShareManager()
 void
 MainWindow::showMess()
 {
+#ifndef RS_LIGHT_VERSION
   showWindow(MainWindow::Messages);
+#endif
 }
 
 

@@ -25,6 +25,7 @@
 #include <QMenu>
 #include <QTimer>
 #include <QMessageBox>
+#include <QSignalMapper>
 
 #include <retroshare/rspeers.h>
 #include <retroshare/rshistory.h>
@@ -36,6 +37,7 @@
 #include "NewsFeed.h"
 #include "notifyqt.h"
 #include "profile/ProfileWidget.h"
+#include "profile/ProfilePage.h"
 #include "profile/StatusMessage.h"
 #include "RetroShareLink.h"
 #include "settings/rsharesettings.h"
@@ -44,21 +46,20 @@
 #include "FriendsDialog.h"
 #include "NetworkView.h"
 #include "NetworkDialog.h"
-#include "gui/Identity/IdDialog.h"
-#ifdef RS_USE_CIRCLES
-#include "gui/Circles/CirclesDialog.h"
-#endif
-/* Images for Newsfeed icons */
-//#define IMAGE_NEWSFEED           ""
-//#define IMAGE_NEWSFEED_NEW       ":/images/message-state-new.png"
+#include "MessagesDialog.h"
+#include "ChatLobbyWidget.h"
+
+
 #define IMAGE_NETWORK2          ":/images/logo/logo_16.png"
 #define IMAGE_PEERS         	":/images/groupchat.png"
 #define IMAGE_IDENTITY          ":/images/identity/identities_32.png"
 #define IMAGE_CIRCLES           ":/images/circles/circles_32.png"
 
-/******
- * #define FRIENDS_DEBUG 1
- *****/
+/* View mode */
+#define VIEW_MODE_CONTACTS  1
+#define VIEW_MODE_LOBBIES  2
+#define VIEW_MODE_MAIL  3
+#define VIEW_MODE_PROFILE  4
 
 static FriendsDialog *instance = NULL;
 
@@ -68,6 +69,18 @@ FriendsDialog::FriendsDialog(QWidget *parent)
 {
     /* Invoke the Qt Designer generated object setup routine */
     ui.setupUi(this);
+
+#ifndef RS_LIGHT_VERSION 
+    ui.liteFrame->hide();
+    ui.profileButton->setVisible(false);
+#endif
+
+#ifdef RS_LIGHT_VERSION 
+    ui.titleBarFrame->setVisible(false);
+    ui.stackedWidgetList->setCurrentIndex(1);
+    ui.nicknameLabel->setVisible(false);
+#endif
+
 
     if (instance == NULL) {
         instance = this;
@@ -91,8 +104,11 @@ FriendsDialog::FriendsDialog(QWidget *parent)
     ui.avatar->setFrameType(AvatarWidget::STATUS_FRAME);
 
     ui.tabWidget->setTabPosition(QTabWidget::North);
+
+#ifndef RS_LIGHT_VERSION    
     ui.tabWidget->addTab(networkView = new NetworkView(),QIcon(IMAGE_NETWORK2), tr("Network graph"));
     ui.tabWidget->addTab(networkDialog = new NetworkDialog(),QIcon(IMAGE_PEERS), tr("Keyring"));
+#endif
 
     //ui.tabWidget->addTab(new ProfileWidget(), tr("Profile"));
     //newsFeed = new NewsFeed();
@@ -132,13 +148,37 @@ FriendsDialog::FriendsDialog(QWidget *parent)
     ui.splitter->setStretchFactor(0, 0);
     ui.splitter->setStretchFactor(1, 1);
     /*remove
-QList<int> sizes;
+    QList<int> sizes;
     sizes << height() << 100; // Qt calculates the right sizes
     ui.splitter_2->setSizes(sizes);*/
 
     loadmypersonalstatus();
 
     ui.mypersonalstatusLabel->setMinimumWidth(25);
+    
+    ui.stackedWidget->addWidget(chatLobbyDialog = new ChatLobbyWidget());
+    
+    MessagesDialog *messagesDialog = NULL;
+    ui.stackedWidget->addWidget(messagesDialog = new MessagesDialog());
+    
+    ProfilePage *profilePage = NULL;
+    ui.stackedWidget->addWidget(profilePage = new ProfilePage());
+	
+    /* Initialize view button */
+    //setViewMode(VIEW_MODE_FEEDS); see processSettings
+
+    QSignalMapper *signalMapper = new QSignalMapper(this);
+    connect(ui.contactsButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    connect(ui.lobbiesButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    connect(ui.mailButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+    connect(ui.profileButton, SIGNAL(clicked()), signalMapper, SLOT(map()));
+
+    signalMapper->setMapping(ui.contactsButton, VIEW_MODE_CONTACTS);
+    signalMapper->setMapping(ui.lobbiesButton, VIEW_MODE_LOBBIES);
+    signalMapper->setMapping(ui.mailButton, VIEW_MODE_MAIL);
+    signalMapper->setMapping(ui.profileButton, VIEW_MODE_PROFILE);
+
+    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(setViewMode(int)));
 
     // load settings
     RsAutoUpdatePage::lockAllEvents();
@@ -153,8 +193,8 @@ QList<int> sizes;
     RsPeerDetails pd ;
     if (rsPeers->getPeerDetails(rsPeers->getOwnId(),pd)) {
         ui.nicknameLabel->setText(QString::fromUtf8(pd.name.c_str()) + " (" + QString::fromUtf8(pd.location.c_str())+")");
+        ui.profileButton->setText(QString::fromUtf8(pd.name.c_str()) + " (" + QString::fromUtf8(pd.location.c_str())+")");
     }
-
  QString hlp_str = tr(
   " <h1><img width=\"32\" src=\":/icons/help_64.png\">&nbsp;&nbsp;Network</h1>                                   \
     <p>The Network tab shows your friend Retroshare nodes: the neighbor Retroshare nodes that are connected to you. \
@@ -186,18 +226,20 @@ void FriendsDialog::activatePage(FriendsDialog::Page page)
 {
 	switch(page)
 	{
+#ifdef RS_LIGHT_VERSION
+		case FriendsDialog::Chatlobby: ui.stackedWidget->setCurrentIndex(1);
+											  break ;
+#else
 		case FriendsDialog::IdTab: ui.tabWidget->setCurrentWidget(idDialog) ;
 											  break ;
-#ifdef RS_USE_CIRCLES
-		case FriendsDialog::CirclesTab: ui.tabWidget->setCurrentWidget(circlesDialog) ;
-											  break ;
-#endif
 		case FriendsDialog::NetworkTab: ui.tabWidget->setCurrentWidget(networkDialog) ;
 											  break ;
 		case FriendsDialog::BroadcastTab: ui.tabWidget->setCurrentWidget(networkDialog) ;
 											  break ;
 		case FriendsDialog::NetworkViewTab: ui.tabWidget->setCurrentWidget(networkView) ;
 											  break ;
+#endif
+
 	}
 }
 
@@ -344,3 +386,69 @@ void FriendsDialog::statusmessage()
 	friendsDialog->ui.tabWidget->setCurrentWidget(friendsDialog->ui.groupChatTab);
     friendsDialog->ui.chatWidget->focusDialog();
 }
+
+int FriendsDialog::viewMode()
+{
+	if (ui.contactsButton->isChecked()) {
+		return VIEW_MODE_CONTACTS;
+	} else if (ui.lobbiesButton->isChecked()) {
+		return VIEW_MODE_LOBBIES;
+	} else if (ui.mailButton->isChecked()) {
+		return VIEW_MODE_MAIL;
+	}else if (ui.profileButton->isChecked()) {
+		return VIEW_MODE_PROFILE;
+	}
+
+	/* Default */
+	return VIEW_MODE_CONTACTS;
+}
+
+void FriendsDialog::setViewMode(int viewMode)
+{
+	switch (viewMode) {
+	case VIEW_MODE_CONTACTS:
+    ui.stackedWidget->setCurrentIndex(0);
+
+    ui.contactsButton->setChecked(true);
+    ui.lobbiesButton->setChecked(false);
+    ui.mailButton->setChecked(false);
+    ui.profileButton->setChecked(false);
+
+		break;
+	case VIEW_MODE_LOBBIES:
+    ui.stackedWidget->setCurrentIndex(1);
+
+    ui.contactsButton->setChecked(false);
+    ui.lobbiesButton->setChecked(true);
+    ui.mailButton->setChecked(false);
+    ui.profileButton->setChecked(false);
+
+		break;
+	case VIEW_MODE_MAIL:
+    ui.stackedWidget->setCurrentIndex(2);
+
+    ui.contactsButton->setChecked(false);
+    ui.lobbiesButton->setChecked(false);
+    ui.mailButton->setChecked(true);
+    ui.profileButton->setChecked(false);;
+    
+		break;
+	case VIEW_MODE_PROFILE:
+    ui.stackedWidget->setCurrentIndex(3);
+
+    ui.contactsButton->setChecked(false);
+    ui.lobbiesButton->setChecked(false);
+    ui.mailButton->setChecked(false);;
+    ui.profileButton->setChecked(true);;
+		break;
+	default:
+		setViewMode(VIEW_MODE_CONTACTS);
+		return;
+	}
+}
+
+void FriendsDialog::addWidget(QWidget *w)
+{
+	ui.stackedWidget->addWidget(w) ;
+}
+
