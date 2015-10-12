@@ -60,6 +60,9 @@
 #include <retroshare/rsmsgs.h>
 #include <retroshare/rsplugin.h>
 
+#include <QtAV/QtAV.h>
+#include <QtAVWidgets>
+
 #include <time.h>
 
 /*****
@@ -180,14 +183,14 @@ ChatWidget::ChatWidget(QWidget *parent) :
 
 	resetStatusBar();
 
-    completer = new QCompleter(this);
-    //completer->setModel(modelFromPeers()); //No peers at this point.
-    completer->setModelSorting(QCompleter::UnsortedModel);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    completer->setWrapAround(false);
-    ui->chatTextEdit->setCompleter(completer);
-    ui->chatTextEdit->setCompleterKeyModifiers(Qt::ControlModifier);
-    ui->chatTextEdit->setCompleterKey(Qt::Key_Space);
+	completer = new QCompleter(this);
+	//completer->setModel(modelFromPeers()); //No peers at this point.
+	completer->setModelSorting(QCompleter::UnsortedModel);
+	completer->setCaseSensitivity(Qt::CaseInsensitive);
+	completer->setWrapAround(false);
+	ui->chatTextEdit->setCompleter(completer);
+	ui->chatTextEdit->setCompleterKeyModifiers(Qt::ControlModifier);
+	ui->chatTextEdit->setCompleterKey(Qt::Key_Space);
 
 //#ifdef ENABLE_DISTANT_CHAT_AND_MSGS
 //	contextMnu->addSeparator();
@@ -195,6 +198,36 @@ ChatWidget::ChatWidget(QWidget *parent) :
 //    connect(action, SIGNAL(triggered()), this, SLOT(pasteCreateMsgLink()));
 //    ui->chatTextEdit->addContextMenuAction(action);
 //#endif
+
+	QVBoxLayout *main_layout = new QVBoxLayout;
+	QHBoxLayout *btn_layout = new QHBoxLayout;
+	renderer = new QtAV::GLWidgetRenderer2;
+	renderer->setFocusPolicy(Qt::StrongFocus);
+	renderer->resizeRenderer(640, 480);
+	for (int i = 0; i < 2; ++i) {
+		player[i] = new QtAV::AVPlayer(this);
+		player[i]->setRenderer(renderer);
+		QVBoxLayout *vb = new QVBoxLayout;
+		play_btn[i] = new QPushButton(this);
+		play_btn[i]->setText(QString::fromLatin1("Play-%1").arg(i));
+		file_btn[i] = new QPushButton(this);
+		file_btn[i]->setText(QString::fromLatin1("Choose video-%1").arg(i));
+		connect(play_btn[i], SIGNAL(clicked()), SLOT(playVideo()));
+		connect(file_btn[i], SIGNAL(clicked()), SLOT(setVideo()));
+		vb->addWidget(play_btn[i]);
+		vb->addWidget(file_btn[i]);
+		btn_layout->addLayout(vb);
+	}
+	QPushButton *net_btn = new QPushButton(tr("Test online video(rtsp)"));
+	connect(net_btn, SIGNAL(clicked()), SLOT(testRTSP()));
+	main_layout->addWidget(renderer);
+	main_layout->addWidget(net_btn);
+	main_layout->addLayout(btn_layout);
+
+	av = new QWidget(this);
+	av->setLayout(main_layout);
+	av->resize(720, 600);
+	ui->vl_Plugins->addWidget(av);
 }
 
 ChatWidget::~ChatWidget()
@@ -207,6 +240,43 @@ ChatWidget::~ChatWidget()
 	}
 
 	delete ui;
+}
+
+void ChatWidget::playVideo()
+{
+	for (int i = 0; i < 2; ++i)
+		player[i]->pause(true);
+	QPushButton *btn = qobject_cast<QPushButton*>(sender());
+	int idx = btn->text().section(QLatin1Char('-'), 1).toInt();
+	player[idx]->pause(false);
+}
+
+void ChatWidget::setVideo()
+{
+	QString v = QFileDialog::getOpenFileName(0, QString::fromLatin1("Select a video"));
+	if (v.isEmpty())
+		return;
+
+	QPushButton *btn = qobject_cast<QPushButton*>(sender());
+	int idx = btn->text().section(QLatin1Char('-'), 1).toInt();
+	QString oldv = player[idx]->file();
+	if (v == oldv)
+		return;
+	for (int i = 0; i < 2; ++i)
+		player[i]->pause(true);
+	player[idx]->stop();
+	player[idx]->setFile(v);
+	player[idx]->play();
+}
+
+void ChatWidget::testRTSP()
+{
+	for (int i = 0; i < 2; ++i)
+		player[i]->stop();
+	player[0]->play(QString::fromLatin1("rtsp://122.192.35.80:554/live/tv11"));
+	player[0]->pause(true);
+
+	player[1]->play(QString::fromLatin1("rtsp://122.192.35.80:554/live/tv10"));
 }
 
 void ChatWidget::setDefaultExtraFileFlags(TransferRequestFlags fl)

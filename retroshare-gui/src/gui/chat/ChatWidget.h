@@ -47,6 +47,11 @@ namespace Ui {
 class ChatWidget;
 }
 
+namespace QtAV {
+class GLWidgetRenderer2;
+class AVPlayer;
+}
+
 // a Container for the logic behind buttons in a PopupChatDialog
 // Plugins can implement this interface to provide their own buttons
 class ChatWidgetHolder
@@ -133,6 +138,10 @@ private slots:
 	void messageHistory();
 	void resetStatusBar() ;
 	void searchHistory();
+public slots:
+	void setVideo();
+	void playVideo();
+	void testRTSP();
 
 
 signals:
@@ -251,6 +260,12 @@ private:
 
 	QList<ChatWidgetHolder*> mChatWidgetHolder;
 	ChatLobbyUserNotify* notify;
+
+	QtAV::GLWidgetRenderer2 *renderer;
+	QtAV::AVPlayer *player[2];
+	QPushButton *play_btn[2];
+	QPushButton *file_btn[2];
+	QWidget *av;
 
 	Ui::ChatWidget *ui;
 };

@@ -18,12 +18,14 @@ TARGET = RetroShare06
 greaterThan(QT_MAJOR_VERSION, 4) {
 	# Qt 5
 	QT     += uitools widgets multimedia printsupport
+	QT     += av avwidgets opengl #For QtAV
 	linux-* {
 		QT += x11extras
 	}
 } else {
 	# Qt 4
 	CONFIG += uitools
+	CONFIG += av avwidgets opengl #For QtAV
 }
 
 CONFIG += identities
@@ -295,6 +297,13 @@ DEPENDPATH += ../../libresapi/src
 INCLUDEPATH += ../../libresapi/src
 PRE_TARGETDEPS *= ../../libresapi/src/lib/libresapi.a
 LIBS += ../../libresapi/src/lib/libresapi.a
+
+##QtAv
+PROJECTROOT = $$PWD/../../../lib/QtAV
+!include("$$PROJECTROOT/src/libQtAV.pri"): error("Could not include file $$PROJECTROOT/src/libQtAV.pri")
+!include("$$PROJECTROOT/widgets/libQtAVWidgets.pri"): error("Could not include file $$PROJECTROOT/widgets/libQtAVWidgets.pri")
+preparePaths($$OUT_PWD/../out)
+##/QtAV
 
 # Input
 HEADERS +=  rshare.h \
