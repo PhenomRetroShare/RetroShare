@@ -930,8 +930,7 @@ bool p3BanList::addBanEntry(const RsPeerId &peerId, const struct sockaddr_storag
 	// index is FAMILY + IP - the rest should be Zeros..
 	struct sockaddr_storage bannedaddr;
 	sockaddr_storage_clear(bannedaddr);
-    bannedaddr.ss_family = AF_INET ;
-    sockaddr_storage_copyip(bannedaddr, addr);
+	sockaddr_storage_copyip(bannedaddr, addr);
 	sockaddr_storage_setport(bannedaddr, 0);
 
 	std::map<struct sockaddr_storage, BanListPeer>::iterator mit;
@@ -1052,7 +1051,6 @@ int p3BanList::condenseBanSources_locked()
 
         struct sockaddr_storage bannedaddr;
         sockaddr_storage_clear(bannedaddr);
-    bannedaddr.ss_family = AF_INET ;
         sockaddr_storage_copyip(bannedaddr, lit->second.addr);
         sockaddr_storage_setport(bannedaddr, 0);
 

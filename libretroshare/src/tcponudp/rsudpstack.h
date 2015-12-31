@@ -67,7 +67,7 @@ virtual bool resetListener(const struct sockaddr_storage &local)
 		std::cerr << "rsUdpStack::resetListener(" << sockaddr_storage_tostring(local) << ")";
 		std::cerr << std::endl;
 
-		if (local.ss_family != AF_INET)
+		if ((local.ss_family != AF_INET) && (local.ss_family != AF_UNSPEC))
 		{
 			std::cerr << "rsUdpStack::resetListener() NOT IPv4 ERROR";
 			std::cerr << std::endl;

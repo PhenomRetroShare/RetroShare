@@ -137,9 +137,9 @@ p3NetMgrIMPL::p3NetMgrIMPL()
 		sockaddr_storage_clear(mLocalAddr);
 		sockaddr_storage_clear(mExtAddr);
 
-		// force to IPv4 for the moment.
-		mLocalAddr.ss_family = AF_INET;
-		mExtAddr.ss_family = AF_INET;
+		// force to UnSpec for the moment.
+		mLocalAddr.ss_family = AF_UNSPEC;
+		mExtAddr.ss_family = AF_UNSPEC;
 
 		// default to full.
 		mVsDisc = RS_VS_DISC_FULL;

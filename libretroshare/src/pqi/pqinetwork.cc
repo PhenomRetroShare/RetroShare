@@ -439,6 +439,10 @@ int unix_connect(int fd, const struct sockaddr *serv_addr, socklen_t socklen)
 		case AF_INET6:
 			len = sizeof(struct sockaddr_in6);
 			break;
+		case AF_UNSPEC:
+			std::cerr << "unix_connect() ERROR unspecified address" << std::endl;
+			//Nothing to do, let connect fail
+			break;
 	}
 
 	if (len > socklen)

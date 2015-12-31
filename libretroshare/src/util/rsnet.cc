@@ -73,7 +73,7 @@ uint64_t htonll(uint64_t x)
 void sockaddr_clear(struct sockaddr_in *addr)
 {
         memset(addr, 0, sizeof(struct sockaddr_in));
-        addr->sin_family = AF_INET;
+        addr->sin_family = AF_UNSPEC;
 }
 
 bool rsGetHostByName(const std::string& hostname, in_addr& returned_addr)
@@ -117,6 +117,8 @@ bool    isValidNet(const struct in_addr *addr)
 	if((*addr).s_addr == INADDR_NONE)
 		return false;
 	if((*addr).s_addr == 0)
+		return false;
+	if((*addr).s_addr == 1)
 		return false;
 	// should do more tests.
 	return true;

@@ -48,10 +48,10 @@ uint32_t RsTlvIpAddress::TlvSize() const
 	switch(addr.ss_family)
 	{
 		default:
-		case 0:
+		case AF_UNSPEC:
 			break;
 		case AF_INET:
-			s += GetTlvIpAddrPortV4Size(); 
+			s += GetTlvIpAddrPortV4Size();
 			break;
 		case AF_INET6:
 			s += GetTlvIpAddrPortV6Size(); 
@@ -79,7 +79,7 @@ bool  RsTlvIpAddress::SetTlv(void *data, uint32_t size, uint32_t *offset) const
 	switch(addr.ss_family)
 	{
 		default:
-		case 0:
+		case AF_UNSPEC:
 			break;
 		case AF_INET:
 			ok &= SetTlvIpAddrPortV4(data, tlvend, offset, TLV_TYPE_IPV4, (struct sockaddr_in *) &addr);
