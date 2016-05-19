@@ -165,21 +165,20 @@ void RsThread::start(const std::string &threadName)
         mTid = tid;
 
         // set name
-
-        if(pthread_setname_np)
-		if(!threadName.empty()) 
-		{
-			// thread names are restricted to 16 characters including the terminating null byte
-			if(threadName.length() > 15)
-			{
+#ifdef __USE_GNU
+                if(!threadName.empty()) {
+                        // thread names are restricted to 16 characters including the terminating null byte
+                        if(threadName.length() > 15)
+                        {
 #ifdef DEBUG_THREADS
-				THREAD_DEBUG << "RsThread::start called with to long name '" << name << "' truncating..." << std::endl;
+                                THREAD_DEBUG << "RsThread::start called with to long name '" << name << "' truncating..." << std::endl;
 #endif
-				pthread_setname_np(mTid, threadName.substr(0, 15).c_str());
-			} else {
-				pthread_setname_np(mTid, threadName.c_str());
-			}
-		}
+                                pthread_setname_np(mTid, threadName.substr(0, 15).c_str());
+                        } else {
+                                pthread_setname_np(mTid, threadName.c_str());
+                        }
+                }
+#endif
     }
     else
     {
