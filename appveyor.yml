@@ -45,9 +45,11 @@ skip_commits:
 # scripts that are called at very beginning, before repo cloning
 init:
   - git config --global core.autocrlf input
+  #To get RDP while compiling
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 on_finish:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  #To get RDP running after compiling
+  #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 # clone directory
 clone_folder: c:\projects\RetroShare
@@ -56,27 +58,8 @@ clone_folder: c:\projects\RetroShare
 #shallow_clone: true                 # default is "false"
 
 # set clone depth
-clone_depth: 5                      # clone entire repository history if not defined
+clone_depth: 1                       # clone entire repository history if not defined
 
-# setting up etc\hosts file
-#hosts:
-#  queue-server: 127.0.0.1
-#  db.server.com: 127.0.0.2
-
-# environment variables
-# environment:
-#  global:
-#    connection_string: server=12;password=13;
-#    service_url: https://127.0.0.1:8090
-#
-#  matrix:
-#  - db: mysql
-#    provider: mysql
-#
-#  - db: mssql
-#    provider: mssql
-#    password:
-#      secure: $#(JFDA)jQ@#$
 environment:
   global:
     #Qt: https://www.appveyor.com/docs/installed-software#qt
@@ -84,34 +67,14 @@ environment:
     MSYS2_ARCH: i686
     TARGET: i686_32-pc-msys
 
-# this is how to allow failing jobs in the matrix
-#matrix:
-#  fast_finish: true     # set this flag to immediately finish build once one of the jobs fails.
-#  allow_failures:
-#    - platform: x86
-#      configuration: Debug
-#    - platform: x64
-#      configuration: Release
 
 # build cache to preserve files/folders between builds
-#cache:
+cache:
+  - c:\projects\libs
 #  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
 #  - projectA\libs
 #  - node_modules                    # local npm modules
 #  - %APPDATA%\npm-cache             # npm cache
-
-# enable service required for build/tests
-#services:
-#  - mssql2014           # start SQL Server 2014 Express
-#  - mssql2014rs         # start SQL Server 2014 Express and Reporting Services
-#  - mssql2012sp1        # start SQL Server 2012 SP1 Express
-#  - mssql2012sp1rs      # start SQL Server 2012 SP1 Express and Reporting Services
-#  - mssql2008r2sp2      # start SQL Server 2008 R2 SP2 Express
-#  - mssql2008r2sp2rs    # start SQL Server 2008 R2 SP2 Express and Reporting Services
-#  - mysql               # start MySQL 5.6 service
-#  - postgresql          # start PostgreSQL 9.3 service
-#  - iis                 # start IIS
-#  - msmq                # start Queuing services
 
 # scripts that run after cloning repository
 #install:
@@ -129,10 +92,10 @@ install:
   # Configuring Qt
   - set PATH=%QTDIR%\bin;C:\Qt\Tools\mingw491_32\bin;%PATH%
   # Install all default programms
-  #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy base-devel git mercurial cvs wget p7zip gcc perl ruby python2"
+  #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy base-devel git mercurial cvs wget p7zip gcc perl ruby python2" #Already installed
   - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy openssl-devel"
   # Install toolchain
-  #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain"
+  #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain" #Already installed
   # Install other binutils
   - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -S mingw-w64-i686-miniupnpc mingw-w64-x86_64-miniupnpc"
   - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -S mingw-w64-i686-sqlite3 mingw-w64-x86_64-sqlite3"
@@ -149,25 +112,6 @@ install:
   - copy C:\msys64\mingw64\x86_64-w64-mingw32\bin\ar.exe C:\msys64\mingw64\bin\x86_64-w64-mingw32-ar.exe
   - copy C:\msys64\mingw64\x86_64-w64-mingw32\bin\ranlib.exe C:\msys64\mingw64\bin\x86_64-w64-mingw32-ranlib.exe
   - copy C:\msys64\mingw64\bin\windres.exe C:\msys64\mingw64\bin\x86_64-w64-mingw32-windres.exe
-### TO REMOVE ###
-### Folowing http://www.jerryrw.com/howtocompile.php
-#  - C:\msys64\usr\bin\bash -lc "git clone https://github.com/sqlcipher/sqlcipher.git /c/sqlcipher"
-#  - C:\msys64\usr\bin\bash -lc "cd /c/sqlcipher"
-#  - C:\msys64\usr\bin\bash -lc "cp /c/msys64/usr/share/automake-1.15/config.guess /c/sqlcipher/config.guess"
-#  - C:\msys64\usr\bin\bash -lc "cp /c/msys64/usr/share/automake-1.15/config.sub /c/sqlcipher/config.sub"
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher && ./configure --with-crypto-lib=none --disable-tcl CFLAGS="-DSQLITE_HAS_CODEC -DSQLCIPHER_CRYPTO_OPENSSL -I/c/OpenSSL-Win64/include /c/OpenSSL-Win64/libeay32.dll -L/c/OpenSSL-Win64/bin/ -static-libgcc" LDFLAGS="-leay32""
-#  - copy C:\OpenSSL-Win64\lib\libeay32.lib C:\sqlcipher\libeay32.lib
-#  - copy C:\OpenSSL-Win64\bin\libeay32.dll C:\sqlcipher\libeay32.dll
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher &&  ./configure --with-crypto-lib=none --disable-tcl CFLAGS="-DSQLITE_HAS_CODEC -DSQLCIPHER_CRYPTO_OPENSSL -I/c/OpenSSL-Win32/include /c/sqlcipher/libeay32.dll -L/c/sqlcipher/ -static-libgcc" LDFLAGS="-leay32""
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher && make clean"
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher && make sqlite3.c"
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher && make"
-#  - C:\msys64\mingw32_shell.bat -lc "cd /c/sqlcipher && make dll"
-
-### ONLY HERE TO STOP BUILD AND GET ACCESS TO VM
-#  - error TO GET ACCESS TO VM
-
-###/ TO REMOVE ###
   # Build missing Libs
   - C:\msys64\mingw32_shell.bat -lc "cd /c/projects/RetroShare/msys2_build_libs/ && make"
   # Clone RetroShare
@@ -207,7 +151,6 @@ after_build:
 build_script:
   - cd C:\projects\RetroShare
   - qmake 
-#  - mingw32-make -j 8
   - make
 
 # to disable automatic builds
@@ -241,12 +184,12 @@ deploy:
   provider: GitHub
   auth_token:
     secure: 30kamdIBB5CITqrr7KfipT+i7tL8+kZKmkuTVswNJ4C6cw7buoByNbSnK87sPrFF
-  artifact: /RetroShare06.exe/     # upload RetroShare
+  artifact: /retroshare-gui/src/RetroShare06.exe     # upload RetroShare
   draft: false
   prerelease: true
-  on:
-    branch: master                # release from master branch only
-    appveyor_repo_tag: true       # deploy on tag push only
+  #on:
+  #  branch: master                # release from master branch only
+  #  appveyor_repo_tag: true       # deploy on tag push only
 
 # scripts to run before deployment
 before_deploy:

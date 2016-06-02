@@ -13,12 +13,12 @@ dirs:
 	mkdir -p $(DLD)
 	mkdir -p $(BLD)
 
-sqlcipher: | ../libs/lib/libsqlcipher.a	
+sqlcipher: | ../../libs/lib/libsqlcipher.a	
 
 $(DLD)/sqlcipher-$(SQLCIPHER_VERSION).tar.gz:
 	curl.exe -L -k https://github.com/sqlcipher/sqlcipher/archive/v$(SQLCIPHER_VERSION).tar.gz -o $(DLD)/sqlcipher-$(SQLCIPHER_VERSION).tar.gz
 	
-../libs/lib/libsqlcipher.a: $(DLD)/sqlcipher-$(SQLCIPHER_VERSION).tar.gz
+../../libs/lib/libsqlcipher.a: $(DLD)/sqlcipher-$(SQLCIPHER_VERSION).tar.gz
 	tar xvf $(DLD)/sqlcipher-$(SQLCIPHER_VERSION).tar.gz -C $(BLD)
 	cp $(MSYS2AUTOMAKE)/config.guess $(BLD)/sqlcipher-$(SQLCIPHER_VERSION)/config.guess
 	cp $(MSYS2AUTOMAKE)/config.sub $(BLD)/sqlcipher-$(SQLCIPHER_VERSION)/config.sub
