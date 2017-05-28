@@ -94,6 +94,7 @@ install:
   # Install all default programms
   #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy base-devel git mercurial cvs wget p7zip gcc perl ruby python2" #Already installed
   - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy openssl-devel"
+  - C:\msys64\usr\bin\bash -lc "pacman --noconfirm -Sy libcurl-devel"
   # Install toolchain
   #- C:\msys64\usr\bin\bash -lc "pacman --noconfirm -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain" #Already installed
   # Install other binutils
