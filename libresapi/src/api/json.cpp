@@ -19,20 +19,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.       *
  *                                                                             *
  *******************************************************************************/
-#define nullptr 0
 
 #include "json.h"
+
+#include <util/cxx11retrocompat.h>
+
+#include <algorithm>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <functional>
+#include <stack>
 #include <stdlib.h>
 #include <string>
-#include <algorithm>
-#include <cstdlib>
-#include <cstdio>
-#include <climits>
 #include <string.h>
-#include <functional>
-#include <cctype>
-#include <stack>
-#include <cerrno>
 
 #ifndef WIN32
 #define _stricmp strcasecmp

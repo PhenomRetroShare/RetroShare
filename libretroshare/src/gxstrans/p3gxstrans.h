@@ -21,16 +21,18 @@
  *******************************************************************************/
 #pragma once
 
-#include <stdint.h>
-#include <unordered_map>
-#include <map>
-
-#include "retroshare/rsgxsifacetypes.h" // For RsGxsId, RsGxsCircleId
 #include "gxs/gxstokenqueue.h" // For GxsTokenQueue
 #include "gxstrans/p3gxstransitems.h"
+#include "retroshare/rsgxsifacetypes.h" // For RsGxsId, RsGxsCircleId
+#include "retroshare/rsgxstrans.h"
 #include "services/p3idservice.h" // For p3IdService
 #include "util/rsthreads.h"
-#include "retroshare/rsgxstrans.h"
+
+#include <map>
+//#include <stdint.h>
+#ifndef __APPLE__
+#include <unordered_map>
+#endif
 
 class p3GxsTrans;
 
@@ -218,7 +220,11 @@ private:
 	 * item to not being processed and memleaked multimap is used instead of map
 	 * for incoming queue.
 	 */
+	#ifndef __APPLE__
 	typedef std::unordered_multimap<RsGxsTransId, RsGxsTransBaseMsgItem*> inMap;
+	#else
+	typedef std::multimap<RsGxsTransId, RsGxsTransBaseMsgItem*> inMap;
+	#endif
 	inMap mIncomingQueue;
 	RsMutex mIngoingMutex;
 
