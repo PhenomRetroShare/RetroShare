@@ -207,6 +207,11 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
             hiddenmode = true;
     }
 
+	/* Install own Noto Font */
+	int ret = QFontDatabase::addApplicationFont(":/fonts/NotoColorEmoji.ttf");
+	if (ret == -1)
+		RS_ERR("Can't add Noto Font.");
+
     setWindowTitle(tr("RetroShare %1 a secure decentralized communication platform").arg(Rshare::retroshareVersion(true)) + " - " + nameAndLocation);
     connect(rApp, SIGNAL(newArgsReceived(QStringList)), this, SLOT(receiveNewArgs(QStringList)));
 

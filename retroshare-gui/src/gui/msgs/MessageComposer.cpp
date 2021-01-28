@@ -613,11 +613,11 @@ void MessageComposer::recommendFriend(const std::set <RsPeerId> &sslIds, const R
 
 void MessageComposer::addConnectAttemptMsg(const RsPgpId &gpgId, const RsPeerId &sslId, const QString &/*sslName*/)
 {
-    if (gpgId.isNull())
-        return;
+	if (gpgId.isNull())
+		return;
 
-    // PGPId+SslId are always here.  But if the peer is not a friend the SSL id cannot be used.
-    // (todo) If the PGP id doesn't get us a PGP key from the keyring, we need to create a short invite
+	// PGPId+SslId are always here.  But if the peer is not a friend the SSL id cannot be used.
+	// (todo) If the PGP id doesn't get us a PGP key from the keyring, we need to create a short invite
 
 	RetroShareLink link = RetroShareLink::createUnknownSslCertificate(sslId, gpgId);
 
@@ -772,7 +772,6 @@ void MessageComposer::buildCompleter()
     std::list<RsPeerId>::iterator peerIt;
     rsPeers->getFriendList(peers);
     
-    std::list<RsGxsId> gxsIds;
     QList<QTreeWidgetItem*> gxsitems ;
 
     ui.friendSelectionWidget->items(gxsitems,FriendSelectionWidget::IDTYPE_GXS) ;
@@ -781,14 +780,14 @@ void MessageComposer::buildCompleter()
     QStringList completerList;
     QStringList completerGroupList;
     
-    for (QList<QTreeWidgetItem*>::const_iterator idIt = gxsitems.begin(); idIt != gxsitems.end(); ++idIt)
-    {
-        RsGxsId id ( ui.friendSelectionWidget->idFromItem( *idIt ) );
-        RsIdentityDetails detail;
+	for (auto &idIt : gxsitems)
+	{
+		RsGxsId id ( ui.friendSelectionWidget->idFromItem( idIt ) );
+		RsIdentityDetails detail;
 
-        if(rsIdentity->getIdDetails(id, detail))
-            completerList.append( getRecipientEmailAddress(id,detail)) ;
-    }
+		if(rsIdentity->getIdDetails(id, detail))
+			completerList.append( getRecipientEmailAddress(id,detail)) ;
+	}
 
     for (peerIt = peers.begin(); peerIt != peers.end(); ++peerIt)
     {
@@ -1038,8 +1037,8 @@ MessageComposer *MessageComposer::newMsg(const std::string &msgId /* = ""*/)
         std::list<RsGroupInfo> groupInfoList;
         rsPeers->getGroupInfoList(groupInfoList);
 
-        std::list<std::string> groupIds;
-        std::list<std::string>::iterator groupIt;
+    //    std::list<std::string> groupIds;
+    //    std::list<std::string>::iterator groupIt;
 
     //       calculateGroupsOfSslIds(groupInfoList, msgInfo.msgto, groupIds);
     //       for (groupIt = groupIds.begin(); groupIt != groupIds.end(); ++groupIt ) {
@@ -1281,7 +1280,7 @@ MessageComposer *MessageComposer::forwardMsg(const std::string &msgId)
     msgComposer->setTitleText(QString::fromUtf8(msgInfo.title.c_str()), FORWARD);
     msgComposer->setQuotedMsg(QString::fromUtf8(msgInfo.msg.c_str()), buildReplyHeader(msgInfo));
 
-    std::list<FileInfo>& files_info = msgInfo.files;
+    const std::list<FileInfo>& files_info = msgInfo.files;
 
     msgComposer->setFileList(files_info);
 
@@ -1599,16 +1598,17 @@ bool MessageComposer::getRecipientFromRow(int row, enumType &type, destinationTy
 
 QString MessageComposer::getRecipientEmailAddress(const RsGxsId& id,const RsIdentityDetails& detail)
 {
-    return (QString("%2 <")+tr("Distant identity:")+" %2@%1>").arg(QString::fromStdString(id.toStdString())).arg(QString::fromUtf8(detail.mNickname.c_str())) ;
+	return (QString("%2 <")+tr("Distant identity:")+" %2@%1>").arg(QString::fromStdString(id.toStdString())
+	                                                               , QString::fromUtf8(detail.mNickname.c_str()));
 }
 
 QString MessageComposer::getRecipientEmailAddress(const RsPeerId& /* id */,const RsPeerDetails& detail)
 {
-    QString location_name = detail.location.empty()?tr("[Missing]"):QString::fromUtf8(detail.location.c_str()) ;
+	QString location_name = detail.location.empty()?tr("[Missing]"):QString::fromUtf8(detail.location.c_str()) ;
 
-    return (QString("%1 (")+tr("Node name & id:")+" %2, %3)").arg(QString::fromUtf8(detail.name.c_str()))
-                 .arg(location_name)
-                 .arg(QString::fromUtf8(detail.id.toStdString().c_str())) ;
+	return (QString("%1 (")+tr("Node name & id:")+" %2, %3)").arg(QString::fromUtf8(detail.name.c_str())
+	                                                              , location_name
+	                                                              , QString::fromUtf8(detail.id.toStdString().c_str())) ;
 }
 
 void MessageComposer::setRecipientToRow(int row, enumType type, destinationType dest_type, const std::string &id)
@@ -1789,11 +1789,11 @@ void MessageComposer::editingRecipientFinished()
     if (row >= rowCount)  // not found
         return;
 
-    enumType type;
-    std::string id; // dummy
+    enumType type = TO;
+    std::string strId; // dummy
     destinationType dtype ;
 
-    getRecipientFromRow(row, type, dtype, id);
+    getRecipientFromRow(row, type, dtype, strId);
 
     QString text = lineEdit->text();
 
@@ -1818,16 +1818,16 @@ void MessageComposer::editingRecipientFinished()
     ui.friendSelectionWidget->items(gxsitems,FriendSelectionWidget::IDTYPE_GXS) ;
     RsIdentityDetails detail;
 
-    for (QList<QTreeWidgetItem*>::const_iterator idIt = gxsitems.begin(); idIt != gxsitems.end(); ++idIt)
-    {
-        RsGxsId id ( ui.friendSelectionWidget->idFromItem( *idIt ) );
+	for (auto &idIt : gxsitems)
+	{
+		RsGxsId id ( ui.friendSelectionWidget->idFromItem( idIt ) );
 
-        if(rsIdentity->getIdDetails(id, detail) && text == getRecipientEmailAddress(id,detail))
-    {
-            setRecipientToRow(row, type, PEER_TYPE_GXS, id.toStdString());
-        return ;
-    }
-    }
+		if(rsIdentity->getIdDetails(id, detail) && text == getRecipientEmailAddress(id,detail))
+		{
+			setRecipientToRow(row, type, PEER_TYPE_GXS, id.toStdString());
+			return ;
+		}
+	}
 
 
     // then groups
@@ -2262,7 +2262,7 @@ void MessageComposer::textAlign(QAction *a)
 
 void MessageComposer::smileyWidget()
 {
-    Emoticons::showSmileyWidget(this, ui.emoticonButton, SLOT(addSmileys()), false);
+	Emoticons()->showSmileyWidget(this, ui.emoticonButton, SLOT(addSmileys()), false);
 }
 
 void MessageComposer::addSmileys()
@@ -2271,7 +2271,8 @@ void MessageComposer::addSmileys()
 	// add trailing space
 	smiley += QString(" ");
 	// add preceding space when needed (not at start of text or preceding space already exists)
-	if(!ui.msgText->textCursor().atStart() && ui.msgText->toPlainText()[ui.msgText->textCursor().position() - 1] != QChar(' '))
+	QString text = ui.msgText->toPlainText();
+	if(!ui.msgText->textCursor().atStart() && text[ui.msgText->textCursor().position() - 1] != QChar(' '))
 		smiley = QString(" ") + smiley;
 	ui.msgText->textCursor().insertText(smiley);
 }
