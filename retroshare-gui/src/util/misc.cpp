@@ -19,17 +19,20 @@
  *                                                                             *
  *******************************************************************************/
 
-#include <QString>
+#include "misc.h"
+
+#include "gui/common/FilesDefs.h"
+#include "util/rsdebug.h"
+
+#include <QApplication>
+#include <QBuffer>
+#include <QByteArray>
 #include <QDir>
 #include <QFileDialog>
-#include <QByteArray>
-#include <QBuffer>
-#include <time.h>
 #include <QFontDialog>
+#include <QString>
 
-#include "misc.h"
-#include "util/rsdebug.h"
-#include "gui/common/FilesDefs.h"
+#include <time.h>
 
 // return best userfriendly storage unit (B, KiB, MiB, GiB, TiB)
 // use Binary prefix standards from IEC 60027-2
@@ -89,11 +92,9 @@ bool misc::isPreviewable(QString extension)
     if(extension == "AC3") return true;
     if(extension == "MP4") return true;
     if(extension == "MP2") return true;
-    if(extension == "AVI") return true;
     if(extension == "FLAC") return true;
     if(extension == "AU") return true;
     if(extension == "MPE") return true;
-    if(extension == "MOV") return true;
     if(extension == "MKV") return true;
     if(extension == "AIF") return true;
     if(extension == "AIFF") return true;
@@ -226,8 +227,6 @@ QString misc::userFriendlyUnit(double count, unsigned int decimal, double factor
     if (count <= 0.0) {
         return "0";
     }
-
-    QString output;
 
     int i;
     for (i = 0; i < 5; ++i) {
@@ -434,3 +433,12 @@ void misc::clearLayout(QLayout * layout) {
 		//delete item;//Auto deleted by Qt.
 	}
 }
+
+QSizeF misc::getFontSizeFactor(const QString &group, const qreal defaultFactor /*= 1.0*/)
+{
+	static qreal appFontWidth  = QFontMetrics(QApplication::font()).maxWidth();
+	static qreal appFontHeight = QFontMetrics(QApplication::font()).height();
+	qreal factor = Settings->valueFromGroup("FontHeighFactor",group,defaultFactor).toReal();
+	return QSizeF(appFontWidth*factor,appFontHeight*factor);
+}
+
