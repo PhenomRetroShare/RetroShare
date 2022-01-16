@@ -82,6 +82,9 @@ voipGraph::voipGraph(QWidget *parent)
 /** Constructor */
 VOIPConfigPanel::VOIPConfigPanel(QWidget * parent, Qt::WindowFlags flags)
     : ConfigPage(parent, flags)
+    , inputAudioDevice(nullptr), inputAudioProcessor(nullptr)
+    , videoInput(nullptr), videoProcessor(nullptr)
+    , graph_source(nullptr), qtTick(nullptr)
 {
     std::cerr << "Creating audioInputConfig object" << std::endl;
 
@@ -89,13 +92,6 @@ VOIPConfigPanel::VOIPConfigPanel(QWidget * parent, Qt::WindowFlags flags)
     ui.setupUi(this);
 
     loaded = false;
-
-    inputAudioProcessor = NULL;
-    inputAudioDevice = NULL;
-    graph_source = nullptr;
-    videoInput = nullptr;
-    videoProcessor = nullptr;
-    qtTick = NULL;
 
     ui.qcbTransmit->addItem(tr("Continuous"), RsVOIP::AudioTransmitContinous);
     ui.qcbTransmit->addItem(tr("Voice Activity"), RsVOIP::AudioTransmitVAD);
@@ -220,7 +216,7 @@ void VOIPConfigPanel::clearPipeline()
     if (graph_source) {
         graph_source->stop() ;
         graph_source->setVideoInput(NULL) ;
-        graph_source=nullptr; // is deleted by setSource below. This is a bad design.
+        graph_source=nullptr; // csoler 2021-05-12: is deleted by setSource below. This is a bad design.
     }
 
     ui.voipBwGraph->setSource(nullptr);

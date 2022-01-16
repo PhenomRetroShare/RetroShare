@@ -31,13 +31,11 @@
 // #define DEBUG_QVIDEODEVICE 1
 
 QVideoInputDevice::QVideoInputDevice(QWidget *parent)
-  :QObject(parent)
-{
-	_timer = NULL ;
-	_capture_device = NULL ;
-	_video_processor = NULL ;
-	_echo_output_device = NULL ;
-}
+  : QObject(parent)
+  , _video_processor(nullptr), _timer(nullptr)
+  , _capture_device(nullptr), _image_capture(nullptr)
+  , _echo_output_device(nullptr)
+{}
 
 QVideoInputDevice::~QVideoInputDevice()
 {
@@ -132,7 +130,9 @@ void QVideoInputDevice::start(const QString& description)
         emit cameraCaptureInfo(CAMERA_IS_READY,QCamera::NoError);
 
         delete _capture_device;
+        _capture_device = nullptr;
         delete _image_capture;
+        _image_capture = nullptr;
         return;
     }
 

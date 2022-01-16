@@ -27,8 +27,6 @@
 
 #include "p3FeedReader.h"
 
-const uint32_t CONFIG_TYPE_FEEDREADER = 0xf001; // is this correct?
-
 const uint8_t RS_PKT_SUBTYPE_FEEDREADER_FEED  = 0x02;
 const uint8_t RS_PKT_SUBTYPE_FEEDREADER_MSG   = 0x03;
 
@@ -61,23 +59,30 @@ public:
 	RsFeedReaderFeed();
 	virtual ~RsFeedReaderFeed() {}
 
+protected:
+	// The functions below handle the serialisation of data that is specific to the bouncing object level.
+	// They are called by serial_size() and serialise() from children, but should not overload the serial_size() and
+	// serialise() methods, otherwise the wrong method will be called when serialising from this top level class.
+	virtual void serial_process(RsGenericSerializer::SerializeJob j,RsGenericSerializer::SerializeContext& ctx);
+
+public:
 	virtual void clear();
 
 	uint32_t                 feedId;
 	uint32_t                 parentId;
-	std::string              name;
 	std::string              url;
+	std::string              name;
+	std::string              description;
+	std::string              icon;
 	std::string              user;
 	std::string              password;
 	std::string              proxyAddress;
 	uint16_t                 proxyPort;
 	uint32_t                 updateInterval;
 	time_t                   lastUpdate;
+	uint32_t                 storageTime;
 	uint32_t                 flag; // RS_FEED_FLAG_...
 	std::string              forumId;
-	uint32_t                 storageTime;
-	std::string              description;
-	std::string              icon;
 	RsFeedReaderErrorState   errorState;
 	std::string              errorString;
 
@@ -104,8 +109,14 @@ public:
 	RsFeedReaderMsg();
 	virtual ~RsFeedReaderMsg() {}
 
+protected:
+	// The functions below handle the serialisation of data that is specific to the bouncing object level.
+	// They are called by serial_size() and serialise() from children, but should not overload the serial_size() and
+	// serialise() methods, otherwise the wrong method will be called when serialising from this top level class.
+	virtual void serial_process(RsGenericSerializer::SerializeJob j,RsGenericSerializer::SerializeContext& ctx);
+
+public:
 	virtual void clear();
-	virtual std::ostream& print(std::ostream &out, uint16_t indent = 0);
 
 	std::string msgId;
 	uint32_t feedId;
@@ -118,28 +129,13 @@ public:
 	uint32_t    flag; // RS_FEEDMSG_FLAG_...
 };
 
-class RsFeedReaderSerialiser: public RsSerialType
+class RsFeedReaderSerialiser: public RsServiceSerializer
 {
 public:
-	RsFeedReaderSerialiser()	: RsSerialType(RS_PKT_VERSION_SERVICE, RS_SERVICE_TYPE_PLUGIN_FEEDREADER) {}
+	RsFeedReaderSerialiser()	: RsServiceSerializer(RS_SERVICE_TYPE_PLUGIN_FEEDREADER) {}
 	virtual ~RsFeedReaderSerialiser() {}
-	
-	virtual	uint32_t size(RsItem *item);
-	virtual	bool     serialise(RsItem *item, void *data, uint32_t *size);
-	virtual	RsItem  *deserialise(void *data, uint32_t *size);
 
-private:
-	/* For RS_PKT_SUBTYPE_FEEDREADER_FEED */
-	virtual uint32_t         sizeFeed(RsFeedReaderFeed *item);
-	virtual bool             serialiseFeed(RsFeedReaderFeed *item, void *data, uint32_t *size);
-	virtual RsFeedReaderFeed *deserialiseFeed(void *data, uint32_t *size);
-
-	/* For RS_PKT_SUBTYPE_FEEDREADER_MSG */
-	virtual uint32_t         sizeMsg(RsFeedReaderMsg *item);
-	virtual bool             serialiseMsg(RsFeedReaderMsg *item, void *data, uint32_t *size);
-	virtual RsFeedReaderMsg  *deserialiseMsg(void *data, uint32_t *size);
+	virtual RsItem *create_item(uint16_t service,uint8_t type) const ;
 };
-
-/**************************************************************************/
 
 #endif

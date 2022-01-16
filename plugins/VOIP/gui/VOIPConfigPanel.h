@@ -55,15 +55,15 @@ class VOIPConfigPanel : public ConfigPage
 		Ui::AudioInput ui;
 		QAudioInput* inputAudioDevice;
 		QtSpeex::SpeexInputProcessor* inputAudioProcessor;
-		AudioBar* abSpeech;
+		//AudioBar* abSpeech;
 		//VideoDecoder *videoDecoder ;
 		//VideoEncoder *videoEncoder ;
 		QVideoInputDevice *videoInput ;
-        VideoProcessor *videoProcessor ;
+		VideoProcessor *videoProcessor ;
 		bool loaded;
-        QString currentCameraDescription;
+		QString currentCameraDescription;
 
-        voipGraphSource *graph_source ;
+		voipGraphSource *graph_source ;
 
 	protected:
 		QTimer *qtTick;
